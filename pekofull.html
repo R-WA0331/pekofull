@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pekofull 給餌量計算ツール</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f4f8;
+      padding: 20px;
+      margin: 0;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      margin: auto;
+    }
+
+    h2 {
+      color: #2b547e;
+      text-align: center;
+      margin-top: 0;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      background: #2b547e;
+      color: #fff;
+      border: none;
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #1a365d;
+    }
+
+    .result {
+      margin-top: 20px;
+      border-top: 2px dashed #eee;
+      padding-top: 15px;
+      display: none;
+    }
+
+    .res-item {
+      font-size: 16px;
+      margin: 8px 0;
+      color: #333;
+    }
+
+    .highlight {
+      font-size: 24px;
+      color: #d9534f;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>「pekofull」給餌量計算</h2>
+    <p style="font-size: 13px; color: #666;">わんちゃんの体重を入力すると、1日の給与量・カロリー・消費目安を計算します。</p>
+
+    <label for="weight">体重 (kg)</label>
+    <input type="number" id="weight" step="0.1" min="0.1" max="60" placeholder="例: 5.5">
+
+    <button onclick="calculate()">計算する</button>
+
+    <div id="result" class="result">
+      <div class="res-item">給与量 (1日): <span id="gram" class="highlight">0</span> g</div>
+      <div class="res-item">カロリー (1日): <span id="kcal">0</span> kcal</div>
+      <div class="res-item">消費日数 (400g/本): 約 <span id="days">0</span> 日</div>
+    </div>
+  </div>
+
+  <script>
+    function calculate() {
+      const weight = parseFloat(document.getElementById('weight').value);
+      if (!weight || weight <= 0 || weight > 60) {
+        alert('0.1kg 〜 60kg の範囲で入力してください。');
+        return;
+      }
+
+      // 代謝エネルギー（RER）ベースの計算式
+      const kcal = 130 * Math.pow(weight, 0.75);
+      const gram = kcal / 1.946; // 100gあたり約194.6kcal換算
+      const days = 400 / gram;
+
+      document.getElementById('gram').innerText = Math.round(gram);
+      document.getElementById('kcal').innerText = Math.round(kcal);
+      document.getElementById('days').innerText = days.toFixed(1);
+
+      document.getElementById('result').style.display = 'block';
+    }
+  </script>
+
+</body>
+
+</html>
