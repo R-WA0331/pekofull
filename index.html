@@ -14,6 +14,7 @@
       --brand-light-bg: #edf5fa;
       --board-navy: #1b2845;
       --gold-accent: #dfb36c;
+      --meal-accent: #e67e22; /* 1食分用アクセントカラー */
     }
 
     body {
@@ -41,25 +42,31 @@
       letter-spacing: 0.5px;
     }
 
+    .form-group {
+      margin-bottom: 12px;
+    }
+
     label {
       font-weight: bold;
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: #444;
+      font-size: 14px;
     }
 
-    input[type="number"] {
+    input[type="number"], select {
       width: 100%;
       padding: 12px;
-      font-size: 18px;
+      font-size: 16px;
       border: 2px solid #d0e1f0;
       border-radius: 8px;
       box-sizing: border-box;
       outline: none;
+      background: #fff;
       transition: border-color 0.2s;
     }
 
-    input[type="number"]:focus {
+    input[type="number"]:focus, select:focus {
       border-color: var(--brand-blue);
     }
 
@@ -72,7 +79,7 @@
       font-size: 18px;
       border-radius: 8px;
       cursor: pointer;
-      margin-top: 15px;
+      margin-top: 10px;
       font-weight: bold;
       box-shadow: 0 4px 10px rgba(59, 130, 196, 0.3);
       transition: background 0.2s;
@@ -108,23 +115,36 @@
 
     /* 計算結果概要 */
     .res-summary {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
       background: var(--brand-light-bg);
-      padding: 12px 10px;
+      padding: 12px;
       border-radius: 10px;
       margin-bottom: 15px;
     }
 
     .res-box {
       text-align: center;
-      flex: 1;
+      background: #fff;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #e0ebf5;
+    }
+
+    .res-box.highlight-box {
+      border: 1.5px solid var(--meal-accent);
+      background: #fffaf5;
     }
 
     .res-box .val {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       color: var(--brand-blue);
+    }
+
+    .res-box.highlight-box .val {
+      color: var(--meal-accent);
     }
 
     .res-box .unit {
@@ -164,17 +184,34 @@
       display: flex;
     }
 
-    .roll-portion {
+    /* 1食分エリア */
+    .roll-meal-portion {
+      background: var(--meal-accent);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      transition: width 0.4s ease-in-out;
+      border-right: 2px dashed #fff;
+      white-space: nowrap;
+    }
+
+    /* 1日分残りエリア */
+    .roll-day-portion {
       background: var(--brand-blue);
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: bold;
       transition: width 0.4s ease-in-out;
       border-right: 2px solid #fff;
+      white-space: nowrap;
     }
 
     .ruler {
@@ -186,18 +223,22 @@
     }
 
     .cut-guide {
-      text-align: center;
       margin-top: 12px;
-      font-size: 13px;
+      font-size: 12px;
       color: #fff;
       background: rgba(255, 255, 255, 0.1);
-      padding: 8px;
+      padding: 10px;
       border-radius: 6px;
+      line-height: 1.6;
     }
 
     .cut-guide b {
       color: var(--gold-accent);
-      font-size: 15px;
+      font-size: 14px;
+    }
+
+    .meal-highlight {
+      color: #ffbe76 !important;
     }
   </style>
 </head>
@@ -206,27 +247,42 @@
 
   <div class="card">
     <h2>「ぺこふる」給餌量計算</h2>
-    <p style="font-size: 12px; color: #666; text-align: center;">わんちゃんの体重から1日のカット目安を可視化します</p>
+    <p style="font-size: 12px; color: #666; text-align: center;">体重と回数から1食・1日のカット目安を計算します</p>
 
-    <label for="weight">体重 (kg)</label>
-    <input type="number" id="weight" step="0.1" min="0.1" max="60" placeholder="例: 5.5">
+    <div class="form-group">
+      <label for="weight">わんちゃんの体重 (kg)</label>
+      <input type="number" id="weight" step="0.1" min="0.1" max="60" placeholder="例: 5.5">
+    </div>
+
+    <div class="form-group">
+      <label for="times">1日の給餌回数</label>
+      <select id="times">
+        <option value="2" selected>2回（朝・夕）</option>
+        <option value="1">1回</option>
+        <option value="3">3回（朝・昼・晩）</option>
+      </select>
+    </div>
 
     <button class="btn-calc" onclick="calculate()">カット位置を計算する</button>
 
     <div id="result" class="result">
       
       <div class="res-summary">
+        <div class="res-box highlight-box">
+          <div class="unit">1食あたりの給与量</div>
+          <div class="val"><span id="mealGram">0</span><span style="font-size:11px;">g</span></div>
+        </div>
         <div class="res-box">
           <div class="unit">1日の給与量</div>
-          <div class="val"><span id="gram">0</span><span style="font-size:12px;">g</span></div>
+          <div class="val"><span id="dayGram">0</span><span style="font-size:11px;">g</span></div>
         </div>
         <div class="res-box">
-          <div class="unit">カロリー</div>
-          <div class="val"><span id="kcal">0</span><span style="font-size:12px;">kcal</span></div>
+          <div class="unit">1日のカロリー</div>
+          <div class="val"><span id="kcal">0</span><span style="font-size:11px;">kcal</span></div>
         </div>
         <div class="res-box">
-          <div class="unit">1本(400g)目安</div>
-          <div class="val">約<span id="days">0</span><span style="font-size:12px;">日分</span></div>
+          <div class="unit">1本(400g)持ち</div>
+          <div class="val">約<span id="days">0</span><span style="font-size:11px;">日分</span></div>
         </div>
       </div>
 
@@ -243,11 +299,15 @@
         </div>
 
         <div class="roll-container">
-          <div id="rollPortion" class="roll-portion" style="width: 0%;">1日分</div>
+          <!-- 1食分（オレンジ） -->
+          <div id="rollMealPortion" class="roll-meal-portion" style="width: 0%;">1食分</div>
+          <!-- 1日分の残り（ブルー） -->
+          <div id="rollDayPortion" class="roll-day-portion" style="width: 0%;">1日分</div>
         </div>
 
         <div class="cut-guide">
-          ✂️ 1本から <b><span id="cutPercent">0</span>%</b> （約 <b><span id="cutCm">0</span> cm</b>）をカット
+          🔸 <b>1食分（<span id="displayTimes">2</span>分の一）:</b> 端から約 <b class="meal-highlight"><span id="mealCm">0</span> cm</b>（約 <span id="mealGramGuide">0</span>g）<br>
+          🔹 <b>1日分合計:</b> 端から約 <b><span id="dayCm">0</span> cm</b>（約 <span id="dayGramGuide">0</span>g）
         </div>
       </div>
 
@@ -263,7 +323,6 @@
     // ----------------------------------------------------
     // 1. LIFF の初期化処理
     // ----------------------------------------------------
-    // ※ LINE Developersで発行した LIFF ID に差し替えてください
     const MY_LIFF_ID = "YOUR_LIFF_ID_HERE";
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -277,40 +336,69 @@
     });
 
     // 計算用変数
-    let calculatedGram = 0;
-    let calculatedDays = 0;
-    let calculatedCm = 0;
     let currentWeight = 0;
+    let currentTimes = 2;
+    let calculatedDayGram = 0;
+    let calculatedMealGram = 0;
+    let calculatedDays = 0;
+    let calculatedDayCm = 0;
+    let calculatedMealCm = 0;
 
     // ----------------------------------------------------
     // 2. 計算ロジック
     // ----------------------------------------------------
     function calculate() {
       const weight = parseFloat(document.getElementById('weight').value);
+      const times = parseInt(document.getElementById('times').value);
+
       if (!weight || weight <= 0 || weight > 60) {
         alert('0.1kg 〜 60kg の範囲で入力してください。');
         return;
       }
 
       currentWeight = weight;
+      currentTimes = times;
+
+      // カロリー・1日グラム計算
       const kcal = 130 * Math.pow(weight, 0.75);
-      calculatedGram = Math.round(kcal / 1.946); 
-      calculatedDays = (400 / calculatedGram).toFixed(1);
+      calculatedDayGram = Math.round(kcal / 1.946); 
+      calculatedMealGram = Math.round(calculatedDayGram / times);
+      calculatedDays = (400 / calculatedDayGram).toFixed(1);
 
-      let portionPercent = (calculatedGram / 400) * 100;
-      if (portionPercent > 100) portionPercent = 100;
+      // カット幅（ボード全幅28cm換算）
+      calculatedDayCm = (28 * (calculatedDayGram / 400)).toFixed(1);
+      calculatedMealCm = (28 * (calculatedMealGram / 400)).toFixed(1);
 
-      calculatedCm = (28 * (calculatedGram / 400)).toFixed(1);
-
-      document.getElementById('gram').innerText = calculatedGram;
+      // 表示への反映
+      document.getElementById('mealGram').innerText = calculatedMealGram;
+      document.getElementById('dayGram').innerText = calculatedDayGram;
       document.getElementById('kcal').innerText = Math.round(kcal);
       document.getElementById('days').innerText = calculatedDays;
 
-      const portionEl = document.getElementById('rollPortion');
-      portionEl.style.width = portionPercent.toFixed(1) + '%';
+      document.getElementById('displayTimes').innerText = times;
+      document.getElementById('mealCm').innerText = calculatedMealCm;
+      document.getElementById('mealGramGuide').innerText = calculatedMealGram;
+      document.getElementById('dayCm').innerText = calculatedDayCm;
+      document.getElementById('dayGramGuide').innerText = calculatedDayGram;
+
+      // バー表示の比率更新（1食分・1日残りの領域）
+      let dayPercent = (calculatedDayGram / 400) * 100;
+      let mealPercent = (calculatedMealGram / 400) * 100;
       
-      document.getElementById('cutPercent').innerText = Math.round(portionPercent);
-      document.getElementById('cutCm').innerText = calculatedCm;
+      if (dayPercent > 100) dayPercent = 100;
+      if (mealPercent > dayPercent) mealPercent = dayPercent;
+
+      const restDayPercent = dayPercent - mealPercent;
+
+      const mealPortionEl = document.getElementById('rollMealPortion');
+      const dayPortionEl = document.getElementById('rollDayPortion');
+
+      mealPortionEl.style.width = mealPercent.toFixed(1) + '%';
+      dayPortionEl.style.width = restDayPercent.toFixed(1) + '%';
+
+      // 文字の折り返し崩れ防止
+      mealPortionEl.innerText = mealPercent > 8 ? "1食" : "";
+      dayPortionEl.innerText = restDayPercent > 12 ? (times > 1 ? "1日分残り" : "1日分") : "";
 
       document.getElementById('result').style.display = 'block';
     }
@@ -324,16 +412,17 @@
         return;
       }
 
-      // 送信するメッセージフォーマット
       const messageText = `🐶【ぺこふる】給餌量カット計算結果\n` +
         `--------------------\n` +
         `■ 体重: ${currentWeight} kg\n` +
-        `■ 1日の給与量: ${calculatedGram} g\n` +
-        `■ 1本(400g)持ち: 約${calculatedDays} 日分\n` +
-        `■ カット位置: 端から約 ${calculatedCm} cm (${Math.round((calculatedGram/400)*100)}%)\n` +
-        `--------------------`;
+        `■ 給餌回数: 1日 ${currentTimes} 回\n` +
+        `--------------------\n` +
+        `🍚 1食あたりの給与量: 約 ${calculatedMealGram} g\n` +
+        `✂️ 1食分のカット目安: 端から 約 ${calculatedMealCm} cm\n` +
+        `--------------------\n` +
+        `🍖 1日の給与量合計: 約 ${calculatedDayGram} g (約 ${calculatedDayCm} cm)\n` +
+        `📦 1本(400g)持ち: 約 ${calculatedDays} 日分`;
 
-      // liff.sendMessages でトークへ送信
       if (liff.isInClient()) {
         liff.sendMessages([
           {
@@ -342,7 +431,7 @@
           }
         ]).then(() => {
           alert('トークに計算結果を送信しました！');
-          liff.closeWindow(); // トーク画面に戻る
+          liff.closeWindow();
         }).catch((err) => {
           alert('メッセージ送信に失敗しました: ' + err.message);
         });
@@ -350,7 +439,6 @@
         alert("※ブラウザでの確認時は、LINEトークへの直接送信はできません。");
       }
     }
-    
   </script>
 
 </body>
