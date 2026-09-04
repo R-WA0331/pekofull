@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pekofull 給餌量計算ツール</title>
+  <!-- LIFF SDK の読み込み -->
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <style>
+    :root {
+      --brand-blue: #3b82c4;
+      --brand-blue-hover: #2d6aa2;
+      --brand-light-bg: #edf5fa;
+      --board-navy: #1b2845;
+      --gold-accent: #dfb36c;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--brand-light-bg);
+      padding: 15px;
+      margin: 0;
+      color: #333;
+    }
+
+    .card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(59, 130, 196, 0.12);
+      max-width: 420px;
+      margin: auto;
+    }
+
+    h2 {
+      color: var(--brand-blue);
+      text-align: center;
+      margin-top: 0;
+      font-size: 22px;
+      letter-spacing: 0.5px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+      color: #444;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 12px;
+      font-size: 18px;
+      border: 2px solid #d0e1f0;
+      border-radius: 8px;
+      box-sizing: border-box;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--brand-blue);
+    }
+
+    .btn-calc {
+      width: 100%;
+      background: var(--brand-blue);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      font-size: 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(59, 130, 196, 0.3);
+      transition: background 0.2s;
+    }
+
+    .btn-calc:hover {
+      background: var(--brand-blue-hover);
+    }
+
+    .btn-send {
+      width: 100%;
+      background: #06C755; /* LINE Green */
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .result {
+      margin-top: 20px;
+      border-top: 2px dashed #d0e1f0;
+      padding-top: 15px;
+      display: none;
+    }
+
+    /* 計算結果概要 */
+    .res-summary {
+      display: flex;
+      justify-content: space-between;
+      background: var(--brand-light-bg);
+      padding: 12px 10px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .res-box {
+      text-align: center;
+      flex: 1;
+    }
+
+    .res-box .val {
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--brand-blue);
+    }
+
+    .res-box .unit {
+      font-size: 11px;
+      color: #666;
+      margin-bottom: 2px;
+    }
+
+    /* カッティングボード表示 */
+    .cutting-board {
+      background: var(--board-navy);
+      border-radius: 12px;
+      padding: 15px 12px;
+      color: var(--gold-accent);
+      position: relative;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.4);
+    }
+
+    .board-title {
+      font-size: 11px;
+      text-align: center;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    /* ロールフード視覚表示 */
+    .roll-container {
+      position: relative;
+      background: #4a2c22;
+      height: 44px;
+      border-radius: 22px;
+      margin: 12px 0;
+      border: 2px solid var(--gold-accent);
+      overflow: hidden;
+      display: flex;
+    }
+
+    .roll-portion {
+      background: var(--brand-blue);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: bold;
+      transition: width 0.4s ease-in-out;
+      border-right: 2px solid #fff;
+    }
+
+    .ruler {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #fff;
+      padding: 0 4px;
+    }
+
+    .cut-guide {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    .cut-guide b {
+      color: var(--gold-accent);
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>「ぺこふる」給餌量計算</h2>
+    <p style="font-size: 12px; color: #666; text-align: center;">わんちゃんの体重から1日のカット目安を可視化します</p>
+
+    <label for="weight">体重 (kg)</label>
+    <input type="number" id="weight" step="0.1" min="0.1" max="60" placeholder="例: 5.5">
+
+    <button class="btn-calc" onclick="calculate()">カット位置を計算する</button>
+
+    <div id="result" class="result">
+      
+      <div class="res-summary">
+        <div class="res-box">
+          <div class="unit">1日の給与量</div>
+          <div class="val"><span id="gram">0</span><span style="font-size:12px;">g</span></div>
+        </div>
+        <div class="res-box">
+          <div class="unit">カロリー</div>
+          <div class="val"><span id="kcal">0</span><span style="font-size:12px;">kcal</span></div>
+        </div>
+        <div class="res-box">
+          <div class="unit">1本(400g)目安</div>
+          <div class="val">約<span id="days">0</span><span style="font-size:12px;">日分</span></div>
+        </div>
+      </div>
+
+      <!-- カッティングボードイメージ -->
+      <div class="cutting-board">
+        <div class="board-title">THE DOG ROLL FOOD - CUTTING BOARD</div>
+        
+        <div class="ruler">
+          <span>0g</span>
+          <span>100g</span>
+          <span>200g</span>
+          <span>300g</span>
+          <span>400g</span>
+        </div>
+
+        <div class="roll-container">
+          <div id="rollPortion" class="roll-portion" style="width: 0%;">1日分</div>
+        </div>
+
+        <div class="cut-guide">
+          ✂️ 1本から <b><span id="cutPercent">0</span>%</b> （約 <b><span id="cutCm">0</span> cm</b>）をカット
+        </div>
+      </div>
+
+      <!-- トークへ結果を送信するボタン（LIFF連携機能） -->
+      <button id="sendBtn" class="btn-send" onclick="sendToLineTalk()">
+        LINEトークに計算結果を送信
+      </button>
+
+    </div>
+  </div>
+
+  <script>
+    // ----------------------------------------------------
+    // 1. LIFF の初期化処理
+    // ----------------------------------------------------
+    // ※ LINE Developersで発行した LIFF ID に差し替えてください
+    const MY_LIFF_ID = "YOUR_LIFF_ID_HERE";
+
+    document.addEventListener("DOMContentLoaded", function () {
+      liff.init({ liffId: MY_LIFF_ID })
+        .then(() => {
+          console.log("LIFF Initialization Success");
+        })
+        .catch((err) => {
+          console.error("LIFF Initialization failed", err);
+        });
+    });
+
+    // 計算用変数
+    let calculatedGram = 0;
+    let calculatedDays = 0;
+    let calculatedCm = 0;
+    let currentWeight = 0;
+
+    // ----------------------------------------------------
+    // 2. 計算ロジック
+    // ----------------------------------------------------
+    function calculate() {
+      const weight = parseFloat(document.getElementById('weight').value);
+      if (!weight || weight <= 0 || weight > 60) {
+        alert('0.1kg 〜 60kg の範囲で入力してください。');
+        return;
+      }
+
+      currentWeight = weight;
+      const kcal = 130 * Math.pow(weight, 0.75);
+      calculatedGram = Math.round(kcal / 1.946); 
+      calculatedDays = (400 / calculatedGram).toFixed(1);
+
+      let portionPercent = (calculatedGram / 400) * 100;
+      if (portionPercent > 100) portionPercent = 100;
+
+      calculatedCm = (28 * (calculatedGram / 400)).toFixed(1);
+
+      document.getElementById('gram').innerText = calculatedGram;
+      document.getElementById('kcal').innerText = Math.round(kcal);
+      document.getElementById('days').innerText = calculatedDays;
+
+      const portionEl = document.getElementById('rollPortion');
+      portionEl.style.width = portionPercent.toFixed(1) + '%';
+      
+      document.getElementById('cutPercent').innerText = Math.round(portionPercent);
+      document.getElementById('cutCm').innerText = calculatedCm;
+
+      document.getElementById('result').style.display = 'block';
+    }
+
+    // ----------------------------------------------------
+    // 3. LINEトーク画面へメッセージ送信（LIFF API）
+    // ----------------------------------------------------
+    function sendToLineTalk() {
+      if (!liff.isLoggedIn()) {
+        alert("LINEでログインされていません。");
+        return;
+      }
+
+      // 送信するメッセージフォーマット
+      const messageText = `🐶【ぺこふる】給餌量カット計算結果\n` +
+        `--------------------\n` +
+        `■ 体重: ${currentWeight} kg\n` +
+        `■ 1日の給与量: ${calculatedGram} g\n` +
+        `■ 1本(400g)持ち: 約${calculatedDays} 日分\n` +
+        `■ カット位置: 端から約 ${calculatedCm} cm (${Math.round((calculatedGram/400)*100)}%)\n` +
+        `--------------------`;
+
+      // liff.sendMessages でトークへ送信
+      if (liff.isInClient()) {
+        liff.sendMessages([
+          {
+            type: 'text',
+            text: messageText
+          }
+        ]).then(() => {
+          alert('トークに計算結果を送信しました！');
+          liff.closeWindow(); // トーク画面に戻る
+        }).catch((err) => {
+          alert('メッセージ送信に失敗しました: ' + err.message);
+        });
+      } else {
+        alert("※ブラウザでの確認時は、LINEトークへの直接送信はできません。");
+      }
+    }
+    
+  </script>
+
+</body>
+
+</html>
