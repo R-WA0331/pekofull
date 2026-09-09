@@ -604,18 +604,38 @@ input:focus, select:focus {
   border-radius: 4px;
 }
 
-/* 横並びのステップカード */
+/* --- 横スワイプ（カルーセル）用レイアウト --- */
+.how-to-carousel {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 4px 2px 6px 2px;
+  margin-bottom: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.how-to-carousel::-webkit-scrollbar {
+  height: 3px;
+}
+.how-to-carousel::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+/* 横並びのステップカード（画面幅の88%を使って左右横並び配置） */
 .how-to-card-step {
-  flex: 0 0 78%;         
-  max-width: 240px;      
+  flex: 0 0 88%;
+  max-width: 310px;
   scroll-snap-align: start;
   background: #fff;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 10px;
+  padding: 8px 10px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 }
 
 .how-to-card-step .how-to-step-badge {
@@ -623,35 +643,45 @@ input:focus, select:focus {
   font-size: 11px;
   font-weight: 700;
   color: var(--brand-blue);
-  margin-bottom: 2px;
+  margin-bottom: 6px;
 }
 
-.how-to-card-step .how-to-card-text {
-  font-size: 11px;
-  line-height: 1.35;
-  margin: 2px 0 8px 0;
-  min-height: 2.7em;
-}
-
-/* 画像表示枠 */
-.how-to-card-img-large {
+/* 文章（左）と画像（右）の2カラムテーブル配置 */
+.how-to-content-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   width: 100%;
-  aspect-ratio: 4 / 3;  
-  height: auto;
+}
+
+/* 左側：文章 */
+.how-to-card-step .how-to-card-text {
+  flex: 1;
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 0;
+  color: var(--text-main);
+  text-align: left;
+}
+
+/* 右側：画像枠 */
+.how-to-card-img-large {
+  width: 110px;
+  height: 110px;
+  flex-shrink: 0;
   background: var(--brand-light-bg);
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  margin-top: auto;
-  padding: 4px;       
+  padding: 2px;
 }
 
 .how-to-card-img-large img {
   width: 100%;
   height: 100%;
-  object-fit: contain;    
+  object-fit: contain; 
 }
 
 .menu-grid .menu-btn:first-child {
