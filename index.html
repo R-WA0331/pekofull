@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐾 ぺこふる</title>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <!-- Google Fonts: Noto Sans JP -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+
+<body>
+
+  <div class="card">
+    
+    <div id="loadingPage" class="page-content active" style="text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 13px;">
+      <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; color: var(--brand-blue); margin-bottom: 12px;"></i>
+      <div>読み込み中...</div>
+    </div>
+
+    <div id="registerPage" class="page-content">
+      <div class="app-header">
+        <h2 class="app-title"><i class="fa-solid fa-paw" style="color:var(--brand-blue);"></i> 会員情報の登録</h2>
+        <p class="app-subtitle">愛犬に合わせたおすすめ情報をお届けします</p>
+      </div>
+
+      <form id="regForm" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label for="regDogName">愛犬のお名前 <span style="color:#e53e3e;">*</span></label>
+          <input type="text" id="regDogName" required placeholder="例: チョコ">
+        </div>
+
+        <div class="form-group">
+          <label for="regPrefecture">お住まいの都道府県 <span style="color:#e53e3e;">*</span></label>
+          <select id="regPrefecture" required class="pref-select-target">
+            <option value="">選択してください</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="regBirthday">愛犬のお誕生日 <span style="color:#e53e3e;">*</span></label>
+          <input type="date" id="regBirthday" required>
+        </div>
+
+        <div class="form-group">
+          <label for="regBreed">犬種 <span style="color:#e53e3e;">*</span></label>
+          <select id="regBreed" required onchange="toggleOtherBreedInput(this)">
+            <option value="">選択してください</option>
+            <option value="トイプードル">トイプードル</option>
+            <option value="チワワ">チワワ</option>
+            <option value="柴犬">柴犬</option>
+            <option value="ミニチュアダックスフンド">ミニチュアダックスフンド</option>
+            <option value="ポメラニアン">ポメラニアン</option>
+            <option value="フレンチブルドッグ">フレンチブルドッグ</option>
+            <option value="マルチーズ">マルチーズ</option>
+            <option value="ヨークシャーテリア">ヨークシャーテリア</option>
+            <option value="シーズー">シーズー</option>
+            <option value="ミニチュアシュナウザー">ミニチュアシュナウザー</option>
+            <option value="パグ">パグ</option>
+            <option value="ゴールデンレトリバー">ゴールデンレトリバー</option>
+            <option value="ラブラドールレトリバー">ラブラドールレトリバー</option>
+            <option value="ミックス犬・雑種">ミックス犬・雑種</option>
+            <option value="その他">その他（自由入力）</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="otherBreedGroup" style="display: none; margin-top: 6px;">
+          <label for="regBreedOther">犬種名をご入力ください <span style="color:#e53e3e;">*</span></label>
+          <input type="text" id="regBreedOther" placeholder="例: キャバリアなど">
+        </div>
+
+        <div class="form-group" style="margin-top:14px;">
+          <label>定期購入の利用状況</label>
+          <div style="font-size:12px; display:flex; gap:16px; margin-top:6px;">
+            <label style="font-weight:normal; display:flex; align-items:center; gap:4px; cursor:pointer;">
+              <input type="radio" name="isRegular" value="true"> 公式で定期購入中
+            </label>
+            <label style="font-weight:normal; display:flex; align-items:center; gap:4px; cursor:pointer;">
+              <input type="radio" name="isRegular" value="false" checked> 通常購入 / 未購入
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-main" id="regSubmitBtn" style="margin-top:16px;">登録してはじめる</button>
+      </form>
+    </div>
+
+    <div id="menuPage" class="page-content">
+
+      <div class="menu-grid">
+        <button class="menu-btn" onclick="navigateTo('calcPage')">
+          <span class="btn-icon"><i class="fa-solid fa-calculator"></i></span>
+          <span>給餌量計算</span>
+          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <button class="menu-btn" onclick="navigateTo('guidePage')">
+          <span class="btn-icon"><i class="fa-solid fa-book-open"></i></span>
+          <span>切り分けガイド</span>
+          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <button class="menu-btn" onclick="navigateTo('storePage')">
+          <span class="btn-icon"><i class="fa-solid fa-location-dot"></i></span>
+          <span>取扱店舗を探す</span>
+          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <button class="menu-btn" onclick="navigateTo('faqPage')">
+          <span class="btn-icon"><i class="fa-solid fa-circle-question"></i></span>
+          <span>よくある質問</span>
+          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <button class="menu-btn full-width" onclick="navigateTo('eventPage')">
+          <span style="display:flex; align-items:center;">
+            <span class="btn-icon"><i class="fa-solid fa-calendar-star"></i></span>
+            <span>イベント・試食会情報</span>
+          </span>
+          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="calcPage" class="page-content">
+      <button class="btn-back" onclick="navigateTo('menuPage')">
+        <i class="fa-solid fa-chevron-left"></i> メニューに戻る
+      </button>
+
+      <div id="inputSection">
+        <div class="form-group">
+          <label for="weight">体重 (kg)</label>
+          <input type="number" id="weight" step="0.1" min="0.1" max="60" placeholder="例: 5.5">
+        </div>
+        <div class="form-group">
+          <label for="times">1日の給餌回数</label>
+          <select id="times">
+            <option value="2" selected>2回（朝・夕）</option>
+            <option value="1">1回</option>
+            <option value="3">3回（朝・昼・晩）</option>
+          </select>
+        </div>
+        <button class="btn-main" onclick="calculate()">計算する</button>
+      </div>
+
+      <div id="conditionsSummary" class="conditions-summary">
+        <div>体重: <b><span id="sumWeight">0</span> kg</b>｜回数: <b>1日<span id="sumTimes">2</span>回</b></div>
+        <button class="btn-recalc" onclick="resetForm()">変更</button>
+      </div>
+
+      <div id="result" style="display: none;">
+        <div class="res-summary">
+          <div class="res-box highlight-box">
+            <div class="unit">1食の給与量</div>
+            <div class="val"><span id="mealGram">0</span><span style="font-size:10px;">g</span></div>
+          </div>
+          <div class="res-box">
+            <div class="unit">1日の給与量</div>
+            <div class="val"><span id="dayGram">0</span><span style="font-size:10px;">g</span></div>
+          </div>
+          <div class="res-box">
+            <div class="unit">1日のカロリー</div>
+            <div class="val"><span id="kcal">0</span><span style="font-size:10px;">kcal</span></div>
+          </div>
+          <div class="res-box">
+            <div class="unit">1本(400g)持ち</div>
+            <div class="val">約<span id="days">0</span><span style="font-size:10px;">日分</span></div>
+          </div>
+        </div>
+
+        <div class="cutting-board">
+          <div class="board-title">THE DOG ROLL FOOD - CUTTING BOARD</div>
+          <div class="ruler">
+            <span>0g</span>
+            <span>100g</span>
+            <span>200g</span>
+            <span>300g</span>
+            <span>400g</span>
+          </div>
+          <div class="roll-container">
+            <div id="rollMealPortion" class="roll-meal-portion" style="width: 0%;">1食</div>
+            <div id="rollDayPortion" class="roll-day-portion" style="width: 0%;">1日残り</div>
+          </div>
+          <div class="cut-guide">
+            <i class="fa-solid fa-scissors" style="margin-right:4px;"></i> <b>1食分:</b> 端から約 <b class="meal-highlight"><span id="mealCm">0</span> cm</b>（約 <span id="mealGramGuide">0</span>g）<br>
+            <i class="fa-solid fa-utensils" style="margin-right:4px;"></i> <b>1日分:</b> 端から約 <b><span id="dayCm">0</span> cm</b>（約 <span id="dayGramGuide">0</span>g）
+          </div>
+        </div>
+
+        <button id="sendBtn" class="btn-send" onclick="sendToLineTalk()">
+          <i class="fa-brands fa-line" style="font-size:18px;"></i> LINEトークに結果を送信
+        </button>
+
+        <button class="btn-main" onclick="navigateTo('guidePage')" style="background:var(--board-navy); margin-top:10px;">
+          <i class="fa-solid fa-lightbulb" style="margin-right:6px;"></i> ロールフードの上手な切り方・保存方法
+        </button>
+      </div>
+    </div>
+
+<div id="guidePage" class="page-content">
+      <button class="btn-back" onclick="navigateTo('menuPage')">
+        <i class="fa-solid fa-chevron-left"></i> メニューに戻る
+      </button>
+
+      <div class="app-header">
+        <h2 class="app-title">美味しい食べ方ガイド</h2>
+        <p class="app-subtitle">「pekofull-roll」Series</p>
+      </div>
+
+      <!-- 横スワイプ（カルーセル）コンテナ -->
+      <div class="how-to-carousel">
+        <div class="how-to-card-step">
+          <span class="how-to-step-badge">Step 1</span>
+          <p class="how-to-card-text">解凍しフィルムの上から<br>必要な量をスライス！</p>
+          <div class="how-to-card-img-large">
+            <img src="image/1.png" alt="Step 1">
+          </div>
+        </div>
+
+        <div class="how-to-card-step">
+          <span class="how-to-step-badge">Step 2</span>
+          <p class="how-to-card-text">包装材のフィルムを取り除き、<br>お好きなサイズで角切りに。</p>
+          <div class="how-to-card-img-large">
+            <img src="image/2.png" alt="Step 2">
+          </div>
+        </div>
+
+        <div class="how-to-card-step">
+          <span class="how-to-step-badge">Step 3</span>
+          <p class="how-to-card-text">お皿に移して食べさせよう！<br>（つぶして食べやすさUP！）</p>
+          <div class="how-to-card-img-large">
+            <img src="image/3.png" alt="Step 3">
+          </div>
+        </div>
+
+        <div class="how-to-card-step">
+          <span class="how-to-step-badge">Step 4</span>
+          <p class="how-to-card-text">残ったぺこふるは断面をラップで<br>カバーし、冷蔵庫で保存！</p>
+          <div class="how-to-card-img-large">
+            <img src="image/4.png" alt="Step 4">
+          </div>
+        </div>
+      </div>
+
+      <!-- カルーセル直下に配置するカード（ドライフードからの切り替え） -->
+      <div class="guide-card">
+        <div class="guide-title"><i class="fa-solid fa-bowl-food"></i> ドライフードからの切り替え</div>
+        <div style="background:#f7fafc; padding:10px; border-radius:6px; font-size:11px; color:var(--text-main); line-height:1.6;">
+          <strong>1〜2日目:</strong> いつもの 90% ＋ ぺこふる 10%<br>
+          <strong>3〜4日目:</strong> いつもの 70% ＋ ぺこふる 30%<br>
+          <strong>5〜6日目:</strong> いつもの 30% ＋ ぺこふる 70%<br>
+          <strong>7日目以降:</strong> ぺこふる 100% 完了！
+        </div>
+      </div>
+    </div>    
+    
+    <div id="storePage" class="page-content">
+      <button class="btn-back" onclick="navigateTo('menuPage')">
+        <i class="fa-solid fa-chevron-left"></i> メニューに戻る
+      </button>
+
+      <div class="form-group">
+        <label for="prefSelect">都道府県を選択</label>
+        <select id="prefSelect" class="pref-select-target">
+          <option value="">都道府県を選択してください</option>
+        </select>
+      </div>
+      <button class="btn-main" onclick="searchStore()">店舗を表示</button>
+
+      <div id="loadingMsg" style="display:none; text-align:center; font-size:12px; color:var(--text-muted); margin-top:12px;">
+        <i class="fa-solid fa-spinner fa-spin"></i> データを取得中...
+      </div>
+
+      <div id="storeResult" class="store-list" style="display: none;"></div>
+    </div>
+
+    <div id="faqPage" class="page-content">
+      <button class="btn-back" onclick="navigateTo('menuPage')">
+        <i class="fa-solid fa-chevron-left"></i> メニューに戻る
+      </button>
+
+      <div class="app-header">
+        <h2 class="app-title">よくある質問 (Q&A)</h2>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>Q. 開封後の賞味期限と保存方法は？</span>
+          <i class="fa-solid fa-chevron-down" style="font-size:10px; color:var(--text-muted);"></i>
+        </div>
+        <div class="faq-a">
+          A. 開封後はラップでしっかり密封し、冷蔵庫（10℃以下）で保管のうえ、2〜3日以内を目安にお召し上がりください。使い切れない場合は1食分ずつ小分けして冷凍保存（約1ヶ月）も可能です。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>Q. 便がゆるくなってしまった場合は？</span>
+          <i class="fa-solid fa-chevron-down" style="font-size:10px; color:var(--text-muted);"></i>
+        </div>
+        <div class="faq-a">
+          A. 急な切り替えやお肉の水分量により、一時的に便が柔らかくなることがあります。一度給与量を減らすか、従来のフードを少し混ぜて様子を見てください。症状が続く場合は獣医師にご相談ください。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">
+          <span>Q. 生後何ヶ月から与えられますか？</span>
+          <i class="fa-solid fa-chevron-down" style="font-size:10px; color:var(--text-muted);"></i>
+        </div>
+        <div class="faq-a">
+          A. 離乳が完了した生後2ヶ月以降のワンちゃんにお与えいただけます。子猫・幼犬期は成長に必要なカロリー量が多いため、体重に応じた計算を行って調整してください。
+        </div>
+      </div>
+    </div>
+
+    <div id="eventPage" class="page-content">
+      <button class="btn-back" onclick="navigateTo('menuPage')">
+        <i class="fa-solid fa-chevron-left"></i> メニューに戻る
+      </button>
+
+      <div class="app-header">
+        <h2 class="app-title">イベント・試食会情報</h2>
+      </div>
+
+      <div id="eventLoading" style="text-align:center; font-size:12px; color:var(--text-muted); padding:16px 0;">
+        <i class="fa-solid fa-spinner fa-spin"></i> 最新イベントを取得中...
+      </div>
+
+      <div id="eventResultList"></div>
+    </div>
+
+  </div>
+<script src="config.js"></script>
+<script src="script.js"></script>
+</body>
+
+</html>

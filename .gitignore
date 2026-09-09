@@ -1,0 +1,6 @@
+.DS_Store
+*.zip
+**/*.zip
+.env
+.env.local
+config.js
