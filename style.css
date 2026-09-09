@@ -757,39 +757,27 @@ input:focus, select:focus {
 }
 
 /* --- 会員証ページのレイアウト調整（最新版） --- */
+/* --- 会員証ページ全体の調整（確実版） --- */
 #memberPage {
-  position: relative;
   padding-top: 0 !important;
-  box-sizing: border-box;
 }
 
-/* 戻るボタンのヘッダー領域（最上部に固定） */
-.member-page-header {
-  padding-top: 8px;
-  padding-bottom: 4px;
-  background: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+/* 「メニューに戻る」ボタン（.btn-back）の余白を強制リセット */
+#memberPage .btn-back {
+  margin-top: 0 !important;
+  margin-bottom: 8px !important; /* ボタン下の余白を8pxに固定 */
+  display: inline-flex;
+  align-items: center;
 }
 
-.member-page-header .btn-back {
-  margin: 0 !important;
-}
-
-/* カード領域（ボタンのすぐ下に綺麗に配置） */
-.member-page-body {
-  padding-top: 8px;
-}
-
-/* デジタル会員証カード */
-.member-card-box {
+/* 会員証カードの位置と余白を適正化 */
+#memberPage .member-card-box {
   background: linear-gradient(135deg, #1a202c, #2d3748);
   color: #fff;
   border-radius: var(--radius-lg, 12px);
   padding: 16px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  margin-top: 0 !important;
+  margin-top: 0 !important; /* ボタンとの隙間を無駄に開けない */
   margin-bottom: 16px;
   box-sizing: border-box;
   width: 100%;
