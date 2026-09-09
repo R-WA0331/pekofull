@@ -744,10 +744,17 @@ input:focus, select:focus {
   font-size: 11px;
 }
 
-
-/* Netlify等のクレジット表示を非表示化 */
-.netlify-badge,
-[class*="netlify"],
-[id*="netlify"] {
+/* Netlify Drawer UIの強制完全非表示 */
+netlify-drawer,
+#netlify-drawer,
+[data-netlify-drawer],
+[class*="netlify-drawer"],
+iframe[src*="netlify"],
+iframe[title*="Netlify"] {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
 }
