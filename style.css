@@ -606,8 +606,8 @@ input:focus, select:focus {
 
 /* 横並びのステップカード */
 .how-to-card-step {
-  flex: 0 0 75%;        
-  max-width: 220px;   
+  flex: 0 0 78%;         
+  max-width: 240px;      
   scroll-snap-align: start;
   background: #fff;
   border: 1px solid var(--border-color);
@@ -630,13 +630,14 @@ input:focus, select:focus {
   font-size: 11px;
   line-height: 1.35;
   margin: 2px 0 8px 0;
-  min-height: 2.7em;    
+  min-height: 2.7em;
 }
 
-/* 画像コンテナ */
+/* 画像表示枠 */
 .how-to-card-img-large {
   width: 100%;
-  height: 140px;         
+  aspect-ratio: 4 / 3;  
+  height: auto;
   background: var(--brand-light-bg);
   border-radius: var(--radius-sm);
   display: flex;
@@ -644,12 +645,13 @@ input:focus, select:focus {
   justify-content: center;
   overflow: hidden;
   margin-top: auto;
+  padding: 4px;       
 }
 
 .how-to-card-img-large img {
   width: 100%;
   height: 100%;
-  object-fit: cover;   
+  object-fit: contain;    
 }
 
 .menu-grid .menu-btn:first-child {
