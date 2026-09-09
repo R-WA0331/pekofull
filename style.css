@@ -756,20 +756,22 @@ input:focus, select:focus {
   padding-top: 45px !important;
 }
 
-/* 既存スタイル末尾に追加 */
+#memberPage {
+  position: relative;
+  padding-top: 48px; 
+  box-sizing: border-box;
 
 /* --- デジタル会員証スタイル --- */
 .member-card-box {
   background: linear-gradient(135deg, #1a202c, #2d3748);
   color: #fff;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-lg, 12px);
   padding: 16px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
   margin-bottom: 16px;
-  position: relative;
-  overflow: hidden; 
   box-sizing: border-box;
   width: 100%;
+  overflow: hidden;
 }
 
 .member-header {
