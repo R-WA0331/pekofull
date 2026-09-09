@@ -756,36 +756,31 @@ input:focus, select:focus {
   padding-top: 45px !important;
 }
 
-/* --- 会員証ページの親要素・全体の調整 --- */
+/* --- 会員証ページ全体の余白を適正化 --- */
 #memberPage {
   position: relative;
-  /* 戻るボタン（高さ約36px + 余白）の領域を確保 */
-  padding-top: 60px !important; 
-  box-sizing: border-box !important;
-  width: 100%;
+  padding-top: 12px !important; /* 余白を大きすぎる指定から縮小 */
+  box-sizing: border-box;
 }
 
-/* 戻るボタン自体の位置を最前面・固定位置に配置 */
+/* 戻るボタンの余白調整 */
 #memberPage .back-btn,
 #memberPage button:first-child {
-  position: relative;
-  z-index: 10;
-  margin-bottom: 12px;
+  margin-top: 0 !important;
+  margin-bottom: 8px !important; /* ボタン下の無駄なすき間を詰める */
 }
 
-/* デジタル会員証カードの位置調整 */
+/* デジタル会員証カードの余白調整 */
 .member-card-box {
   background: linear-gradient(135deg, #1a202c, #2d3748);
   color: #fff;
   border-radius: var(--radius-lg, 12px);
   padding: 16px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  margin-top: 0 !important; /* 上部余白は padding-top で制御するため0に */
+  margin-top: 0 !important; /* 戻るボタンとの距離を固定 */
   margin-bottom: 16px;
   box-sizing: border-box;
   width: 100%;
-  position: relative;
-  z-index: 1;
 }
 
 .member-header {
