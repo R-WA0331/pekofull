@@ -151,26 +151,30 @@ html, body {
   margin-left: auto;
 }
 
-/* 戻るボタン */
+/* 戻るボタン（上部固定ヘッダー化） */
 .btn-back {
+  position: sticky;      /* スクロールしても上部に固定 */
+  top: 0;                 /* 上端に固定 */
+  z-index: 100;           /* 他のコンテンツより前面に表示 */
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #edf2f7;
+  background: #ffffff;    /* スクロール時に下の文字が透けないよう白背景に */
   border: 1px solid var(--border-color);
   color: var(--text-main);
-  padding: 6px 14px;
+  padding: 8px 16px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 700;
   border-radius: 20px;
   cursor: pointer;
   margin-bottom: 12px;
   flex-shrink: 0;
   transition: background 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* 固定時に浮いて見えるよう影を追加 */
 }
 
 .btn-back:active {
-  background: #e2e8f0;
+  background: #edf2f7;
   border-color: #cbd5e0;
 }
 
