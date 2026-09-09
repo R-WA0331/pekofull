@@ -151,15 +151,16 @@ html, body {
   margin-left: auto;
 }
 
-/* 戻るボタン（上部固定ヘッダー化） */
+/* 戻るボタン（絶対固定化） */
 .btn-back {
-  position: sticky;      /* スクロールしても上部に固定 */
-  top: 0;                 /* 上端に固定 */
-  z-index: 100;           /* 他のコンテンツより前面に表示 */
+  position: fixed;        /* 画面に対して絶対固定 */
+  top: 12px;             /* 画面の上から12pxの位置 */
+  left: 16px;            /* 画面の左から16pxの位置 */
+  z-index: 999;          /* 絶対に最前面に表示 */
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #ffffff;    /* スクロール時に下の文字が透けないよう白背景に */
+  background: #ffffff;
   border: 1px solid var(--border-color);
   color: var(--text-main);
   padding: 8px 16px;
@@ -167,15 +168,13 @@ html, body {
   font-weight: 700;
   border-radius: 20px;
   cursor: pointer;
-  margin-bottom: 12px;
-  flex-shrink: 0;
-  transition: background 0.2s ease, border-color 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); /* 固定時に浮いて見えるよう影を追加 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .btn-back:active {
   background: #edf2f7;
-  border-color: #cbd5e0;
+  transform: scale(0.96);
 }
 
 /* フォーム・ボタン系 */
@@ -746,6 +745,15 @@ input:focus, select:focus {
 /* ガイドページのみ、要素があふれたら縦スクロールを許可 */
 #guidePage {
   overflow-y: auto !important;
+}
+
+/* 戻るボタンがあるページの最上部にスペースを確保（被り防止） */
+#calcPage,
+#guidePage,
+#storePage,
+#faqPage,
+#eventPage {
+  padding-top: 45px !important;
 }
 
 /* Netlify Drawer UIの強制完全非表示 */
