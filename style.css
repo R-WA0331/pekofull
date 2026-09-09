@@ -756,28 +756,24 @@ input:focus, select:focus {
   padding-top: 45px !important;
 }
 
-/* --- 会員証ページのレイアウト調整（最新版） --- */
-/* --- 会員証ページ全体の調整（確実版） --- */
+/* --- 会員証ページスタイル --- */
 #memberPage {
-  padding-top: 0 !important;
+  position: relative;
 }
 
-/* 「メニューに戻る」ボタン（.btn-back）の余白を強制リセット */
+/* 他ページと完全に統一した戻るボタン位置 */
 #memberPage .btn-back {
   margin-top: 0 !important;
-  margin-bottom: 8px !important; /* ボタン下の余白を8pxに固定 */
-  display: inline-flex;
-  align-items: center;
+  margin-bottom: 12px !important;
 }
 
-/* 会員証カードの位置と余白を適正化 */
-#memberPage .member-card-box {
+/* デジタル会員証カード */
+.member-card-box {
   background: linear-gradient(135deg, #1a202c, #2d3748);
   color: #fff;
   border-radius: var(--radius-lg, 12px);
   padding: 16px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-  margin-top: 0 !important; /* ボタンとの隙間を無駄に開けない */
   margin-bottom: 16px;
   box-sizing: border-box;
   width: 100%;
@@ -818,38 +814,32 @@ input:focus, select:focus {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   flex-wrap: wrap; 
 }
 
-.barcode-area {
-  background: #fff;
-  color: #1a202c;
-  border-radius: var(--radius-sm);
-  padding: 10px 8px;
-  text-align: center;
-  width: 100%;
-  box-sizing: border-box;
-  overflow: hidden;
+/* 会員ID表示エリア（疑似バーコードの代替） */
+.user-id-box {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm, 6px);
+  padding: 8px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* バーコード文字が見切れないようフォントサイズと字間を調整 */
-.barcode-mock {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 16px; 
-  font-weight: 900;
-  letter-spacing: 2px;
-  margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: clip;
+.user-id-label {
+  font-size: 10px;
+  color: #a0aec0;
+  font-weight: 500;
 }
 
 .user-id-text {
-  font-size: 10px;
-  color: var(--text-muted);
-  word-break: break-all; 
-  line-height: 1.2;
+  font-size: 11px;
+  font-family: monospace;
+  color: #e2e8f0;
+  word-break: break-all;
 }
 
 /* --- クーポンカードスタイル --- */
