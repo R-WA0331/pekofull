@@ -756,6 +756,115 @@ input:focus, select:focus {
   padding-top: 45px !important;
 }
 
+/* 既存スタイル末尾に追加 */
+
+/* --- デジタル会員証スタイル --- */
+.member-card-box {
+  background: linear-gradient(135deg, #1a202c, #2d3748);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.member-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.member-rank-badge {
+  background: #d69e2e;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.member-dog-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.member-info-row {
+  font-size: 11px;
+  color: #cbd5e0;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.barcode-area {
+  background: #fff;
+  color: #1a202c;
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  text-align: center;
+}
+
+.barcode-mock {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  margin-bottom: 2px;
+}
+
+.user-id-text {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+/* --- クーポンカードスタイル --- */
+.coupon-card {
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.coupon-badge {
+  display: inline-block;
+  background: var(--brand-blue);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.coupon-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--board-navy);
+  margin-bottom: 4px;
+}
+
+.coupon-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.coupon-card.used {
+  opacity: 0.5;
+  filter: grayscale(1);
+  pointer-events: none;
+}
+
 /* Netlify Drawer UIの強制完全非表示 */
 netlify-drawer,
 #netlify-drawer,

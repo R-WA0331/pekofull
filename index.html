@@ -6,14 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🐾 ぺこふる</title>
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <!-- Google Fonts: Noto Sans JP -->
+  <!-- Google Fonts & Font Awesome -->
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 </head>
 
 <body>
@@ -25,6 +23,7 @@
       <div>読み込み中...</div>
     </div>
 
+    <!-- 会員登録画面 -->
     <div id="registerPage" class="page-content">
       <div class="app-header">
         <h2 class="app-title"><i class="fa-solid fa-paw" style="color:var(--brand-blue);"></i> 会員情報の登録</h2>
@@ -92,9 +91,14 @@
       </form>
     </div>
 
+    <!-- メニュー画面 -->
     <div id="menuPage" class="page-content">
-
       <div class="menu-grid">
+        <button class="menu-btn" onclick="navigateTo('memberPage')">
+          <span class="btn-icon"><i class="fa-solid fa-id-card"></i></span>
+          <span>会員証・クーポン</span>
+          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
         <button class="menu-btn" onclick="navigateTo('calcPage')">
           <span class="btn-icon"><i class="fa-solid fa-calculator"></i></span>
           <span>給餌量計算</span>
@@ -125,6 +129,57 @@
       </div>
     </div>
 
+    <!-- 会員証・クーポン画面 -->
+    <div id="memberPage" class="page-content">
+      <button class="btn-back" onclick="navigateTo('menuPage')">
+        <i class="fa-solid fa-chevron-left"></i> メニューに戻る
+      </button>
+
+      <div class="member-card-box">
+        <div class="member-header">
+          <div class="member-rank-badge"><i class="fa-solid fa-crown"></i> ぺこふるファミリー</div>
+          <div id="memberDogName" class="member-dog-name">---- ちゃん</div>
+        </div>
+        <div class="member-info-row">
+          <span>犬種: <b id="memberBreed">-</b></span>
+          <span>居住地: <b id="memberPrefectures">-</b></span>
+        </div>
+        <div class="barcode-area">
+          <div class="barcode-mock">||||| | ||||| || |||||| | ||||</div>
+          <div id="memberUserId" class="user-id-text">ID: LOADING...</div>
+        </div>
+      </div>
+
+      <div class="app-header" style="margin-top:20px; text-align:left;">
+        <h3 class="app-title" style="justify-content:flex-start; font-size:15px;">
+          <i class="fa-solid fa-ticket" style="color:var(--meal-accent);"></i> 保有クーポン
+        </h3>
+      </div>
+
+      <div id="couponList">
+        <!-- クーポン 1: EC自動連携 -->
+        <div class="coupon-card">
+          <div class="coupon-badge">公式EC限定</div>
+          <div class="coupon-title">新規会員登録 500円OFFクーポン</div>
+          <div class="coupon-desc">公式オンラインショップで全品にご利用いただけます。</div>
+          <button class="btn-main" onclick="applyShopifyCoupon('WELCOME500')" style="background:var(--board-navy); margin-top:8px;">
+            <i class="fa-solid fa-cart-shopping"></i> クーポンを適用してショップへ
+          </button>
+        </div>
+
+        <!-- クーポン 2: イベント対面消込 -->
+        <div class="coupon-card" id="coupon-event-sample">
+          <div class="coupon-badge" style="background:#38a169;">イベント会場限定</div>
+          <div class="coupon-title">試食会 トッピング1個プレゼント</div>
+          <div class="coupon-desc">イベント会場のスタッフにご提示ください。</div>
+          <button class="btn-main" id="btn-coupon-event-sample" onclick="useEventCoupon('event-sample')" style="background:var(--meal-accent); margin-top:8px;">
+            <i class="fa-solid fa-qrcode"></i> スタッフに見せて使用する
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 給餌量計算画面 -->
     <div id="calcPage" class="page-content">
       <button class="btn-back" onclick="navigateTo('menuPage')">
         <i class="fa-solid fa-chevron-left"></i> メニューに戻る
@@ -200,7 +255,8 @@
       </div>
     </div>
 
-<div id="guidePage" class="page-content">
+    <!-- 切り分けガイド画面 -->
+    <div id="guidePage" class="page-content">
       <button class="btn-back" onclick="navigateTo('menuPage')">
         <i class="fa-solid fa-chevron-left"></i> メニューに戻る
       </button>
@@ -209,7 +265,6 @@
         <h2 class="app-title">美味しい食べ方ガイド</h2>
       </div>
 
-      <!-- 横スワイプ（カルーセル）コンテナ -->
       <div class="how-to-carousel">
         <div class="how-to-card-step">
           <span class="how-to-step-badge">Step 1</span>
@@ -252,8 +307,6 @@
         </div>
       </div>
 
-
-      <!-- カルーセル直下に配置するカード（ドライフードからの切り替え） -->
       <div class="guide-card">
         <div class="guide-title"><i class="fa-solid fa-bowl-food"></i> ドライフードからの切り替え</div>
         <div style="background:#f7fafc; padding:10px; border-radius:6px; font-size:11px; color:var(--text-main); line-height:1.6;">
@@ -265,6 +318,7 @@
       </div>
     </div>    
     
+    <!-- 取扱店舗画面 -->
     <div id="storePage" class="page-content">
       <button class="btn-back" onclick="navigateTo('menuPage')">
         <i class="fa-solid fa-chevron-left"></i> メニューに戻る
@@ -285,6 +339,7 @@
       <div id="storeResult" class="store-list" style="display: none;"></div>
     </div>
 
+    <!-- FAQ画面 -->
     <div id="faqPage" class="page-content">
       <button class="btn-back" onclick="navigateTo('menuPage')">
         <i class="fa-solid fa-chevron-left"></i> メニューに戻る
@@ -325,6 +380,7 @@
       </div>
     </div>
 
+    <!-- イベント画面 -->
     <div id="eventPage" class="page-content">
       <button class="btn-back" onclick="navigateTo('menuPage')">
         <i class="fa-solid fa-chevron-left"></i> メニューに戻る
@@ -343,9 +399,7 @@
 
   </div>
 
-<!-- <script src="config.js"></script> -->
-<script src="script.js"></script>
-
+  <script src="script.js"></script>
 </body>
 
 </html>
