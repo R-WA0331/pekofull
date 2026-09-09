@@ -104,14 +104,21 @@
           <span>給餌量計算</span>
           <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
         </button>
-        <button class="menu-btn" onclick="navigateTo('guidePage')">
-          <span class="btn-icon"><i class="fa-solid fa-book-open"></i></span>
-          <span>切り分けガイド</span>
-          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
-        </button>
         <button class="menu-btn" onclick="navigateTo('storePage')">
           <span class="btn-icon"><i class="fa-solid fa-location-dot"></i></span>
           <span>取扱店舗を探す</span>
+          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+                <button class="menu-btn full-width" onclick="navigateTo('eventPage')">
+          <span style="display:flex; align-items:center;">
+            <span class="btn-icon"><i class="fa-solid fa-calendar-star"></i></span>
+            <span>イベント・試食会情報</span>
+          </span>
+          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
+        </button>
+        <button class="menu-btn" onclick="navigateTo('guidePage')">
+          <span class="btn-icon"><i class="fa-solid fa-book-open"></i></span>
+          <span>切り分けガイド</span>
           <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
         </button>
         <button class="menu-btn" onclick="navigateTo('faqPage')">
@@ -119,23 +126,16 @@
           <span>よくある質問</span>
           <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
         </button>
-        <button class="menu-btn full-width" onclick="navigateTo('eventPage')">
-          <span style="display:flex; align-items:center;">
-            <span class="btn-icon"><i class="fa-solid fa-calendar-star"></i></span>
-            <span>イベント・試食会情報</span>
-          </span>
-          <span class="arrow"><i class="fa-solid fa-chevron-right"></i></span>
-        </button>
       </div>
     </div>
 
-<!-- 会員証・クーポン画面 -->
+    <!-- 会員証・クーポン画面 -->
     <div id="memberPage" class="page-content">
       <button class="btn-back" onclick="navigateTo('menuPage')">
         <i class="fa-solid fa-chevron-left"></i> メニューに戻る
       </button>
 
-      <!-- 会員証カード（バーコード撤廃・ID表示） -->
+      <!-- 会員証カード -->
       <div class="member-card-box">
         <div class="member-header">
           <div class="member-rank-badge"><i class="fa-solid fa-crown"></i> ぺこふるファミリー</div>
@@ -158,28 +158,14 @@
         </h3>
       </div>
 
+      <!-- GASから取得したクーポンをここに動的描画する -->
       <div id="couponList">
-        <!-- クーポン 1: EC自動連携 -->
-        <div class="coupon-card">
-          <div class="coupon-badge">公式EC限定</div>
-          <div class="coupon-title">新規会員登録 500円OFFクーポン</div>
-          <div class="coupon-desc">公式オンラインショップで全品にご利用いただけます。</div>
-          <button class="btn-main" onclick="applyShopifyCoupon('WELCOME500')" style="background:var(--board-navy); margin-top:8px;">
-            <i class="fa-solid fa-cart-shopping"></i> クーポンを適用してショップへ
-          </button>
-        </div>
-
-        <!-- クーポン 2: イベント対面消込 -->
-        <div class="coupon-card" id="coupon-event-sample">
-          <div class="coupon-badge" style="background:#38a169;">イベント会場限定</div>
-          <div class="coupon-title">試食会 トッピング1個プレゼント</div>
-          <div class="coupon-desc">イベント会場のスタッフにご提示ください。</div>
-          <button class="btn-main" id="btn-coupon-event-sample" onclick="useEventCoupon('event-sample')" style="background:var(--meal-accent); margin-top:8px;">
-            <i class="fa-solid fa-qrcode"></i> スタッフに見せて使用する
-          </button>
-        </div>
+        <p style="text-align:center; font-size:12px; color:#a0aec0; padding:12px;">
+          <i class="fa-solid fa-spinner fa-spin"></i> クーポン情報を読み込み中...
+        </p>
       </div>
     </div>
+
           
     <!-- 給餌量計算画面 -->
     <div id="calcPage" class="page-content">
@@ -400,7 +386,8 @@
     </div>
 
   </div>
-
+  <!-- ローカル開発用 config 基本コメントアウト-->
+  <!-- <script src="config.js"></script> -->
   <script src="script.js"></script>
 </body>
 

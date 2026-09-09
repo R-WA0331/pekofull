@@ -15,6 +15,12 @@ let lineUserId = "";
 let fetchedStores = [];
 let fetchedEvents = [];
 
+// 開発・ローカルテスト用（Go Liveで動かすときだけコメントアウトを外す）
+if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
+  lineUserId = 'U885733473bf657b4bfe0260d01ae9f17'; // ← ここにスプレッドシートにある実際のLINE IDを貼る
+}
+
+
 document.addEventListener("DOMContentLoaded", function () {
     initPrefectureOptions();
 
@@ -560,4 +566,78 @@ async function searchStore() {
     }
 
     resultDiv.style.display = 'block';
+}
+
+// GASから会員情報と保有クーポンを取得して画面に描画する関数
+async function loadMemberData() {
+  const couponListEl = document.getElementById('couponList');
+  if (!GAS_API_URL || GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
+
+  const targetUserId = lineUserId || 'GUEST';
+
+  try {
+    const response = await fetch(`${GAS_API_URL}${GAS_API_URL.includes('?') ? '&' : '?'}type=getUserInfo&userId=${targetUserId}`);
+    const data = await response.json();
+
+    if (data.status === 'success' || data.user) {
+      // 1. 会員情報の反映
+      if (data.user) {
+        document.getElementById('memberDogName').innerText = (data.user.dogName || '----') + ' ちゃん';
+        document.getElementById('memberBreed').innerText = data.user.breed || '-';
+        document.getElementById('memberPrefectures').innerText = data.user.prefecture || '-';
+        document.getElementById('memberUserId').innerText = 'ID: ' + (data.user.userId || targetUserId);
+      }
+
+      // 2. クーポンの動的描画
+      if (data.coupons && data.coupons.length > 0) {
+        const usedSet = new Set(data.usedCoupons || []);
+        
+        // クーポンの動的描画部分のコード
+        couponListEl.innerHTML = data.coupons.map(coupon => {
+        const isUsed = usedSet.has(coupon.couponId);
+        
+        // Shopifyリンクが存在するか確認
+        const hasShopifyUrl = coupon.shopifyUrl && coupon.shopifyUrl.trim() !== '';
+
+        return `
+            <div class="coupon-card ${isUsed ? 'used' : ''}" id="coupon-${coupon.couponId}">
+            <div class="coupon-badge" style="background:${isUsed ? '#a0aec0' : '#38a169'};">
+                ${isUsed ? '使用済み' : '未使用'}
+            </div>
+            <div class="coupon-title">${coupon.title}</div>
+            <div class="coupon-desc">${coupon.description}</div>
+            
+            <!-- ボタン配置エリア（並べて表示） -->
+            <div style="display:flex; gap:8px; margin-top:10px;">
+                <!-- 店舗用ボタン -->
+                <button class="btn-main" id="btn-coupon-${coupon.couponId}" 
+                        onclick="useEventCoupon('${coupon.couponId}')" 
+                        style="background:var(--meal-accent); flex:1; font-size:11px; padding:8px 4px;" 
+                        ${isUsed ? 'disabled' : ''}>
+                <i class="fa-solid fa-qrcode"></i> ${isUsed ? '使用済み' : '店舗で使う'}
+                </button>
+
+                <!-- Shopify（公式ストア）用ボタン（URLがある場合のみ表示） -->
+                ${hasShopifyUrl ? `
+                <a href="${coupon.shopifyUrl}" target="_blank" rel="noopener noreferrer" 
+                    class="btn-main" 
+                    style="background:#95bf47; color:#fff; flex:1; font-size:11px; padding:8px 4px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                    <i class="fa-solid fa-cart-shopping" style="margin-right:4px;"></i> 公式ストアで使う
+                </a>
+                ` : ''}
+            </div>
+            </div>
+        `;
+        }).join('');
+
+      } else {
+        couponListEl.innerHTML = `<p style="text-align:center; font-size:12px; color:#718096; padding:16px;">利用可能なクーポンはありません。</p>`;
+      }
+    }
+  } catch (error) {
+    console.error('データ取得失敗:', error);
+    if (couponListEl) {
+      couponListEl.innerHTML = `<p style="text-align:center; font-size:12px; color:#e53e3e; padding:16px;">クーポンの読み込みに失敗しました。</p>`;
+    }
+  }
 }

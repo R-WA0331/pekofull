@@ -92,52 +92,53 @@ html, body {
   margin: 4px 0 0 0;
 }
 
-/* メニューボタン群（Flexで縦方向へ均等分配） */
+/* メニューボタン群 */
 .menu-grid {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 12px;
-  flex: 1;
-  margin-bottom: 0;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr; /* 基本は2列 */
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
 }
 
+/* 基本のボタンデザイン（アイコン左・テキスト左寄せ） */
 .menu-btn {
-  flex: 1;
-  max-height: 60px;
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-start; /* アイコン左配置 */
+  gap: 8px;
   background: #ffffff;
   border: 1.5px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 0 16px;
-  font-size: 14px;
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--board-navy);
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: var(--shadow-sm);
   text-align: left;
-}
-
-.menu-btn:hover {
-  border-color: var(--brand-blue);
-  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
+  min-height: 48px;
 }
 
 .menu-btn:active {
   background: var(--brand-light-bg);
+  transform: scale(0.98);
 }
 
+/* 右矢印アイコン（>）を非表示にしてスッキリ化 */
+.menu-btn .arrow {
+  display: none !important;
+}
+
+/* アイコンパーツ（左側固定） */
 .menu-btn .btn-icon {
-  font-size: 14px;
-  margin-right: 12px;
+  font-size: 13px;
   color: var(--brand-blue);
   background: #ebf8ff;
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -145,10 +146,100 @@ html, body {
   flex-shrink: 0;
 }
 
-.menu-btn .arrow {
-  color: #a0aec0;
+/* 内側要素の並び順補正 */
+.menu-btn > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- 1段目：イベント・試食会（最上部・細め横長） --- */
+.menu-grid .menu-btn.full-width,
+.menu-grid .menu-btn:nth-child(4) {
+  grid-column: 1 / -1;
+  order: -1; /* 最上部に持ち上げ */
+  background: #fffaf0;
+  border: 1.5px solid #fbd38d;
+  padding: 6px 12px; /* 高さを抑えてスリム化 */
+  min-height: 38px;
+}
+
+.menu-grid .menu-btn.full-width .btn-icon,
+.menu-grid .menu-btn:nth-child(4) .btn-icon {
+  background: #feebc8;
+  color: #dd6b20;
+  width: 24px;
+  height: 24px;
   font-size: 11px;
-  margin-left: auto;
+}
+
+/* --- 2段目：会員証・クーポン（メイン） --- */
+.menu-grid .menu-btn:nth-child(1) {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--brand-blue), #3182ce);
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.25);
+}
+
+.menu-grid .menu-btn:nth-child(1) .btn-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* --- 2段目：会員証・クーポン（メイン） --- */
+.menu-grid .menu-btn:nth-child(1) {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--brand-blue), #3182ce);
+  color: #ffffff;
+  border: none;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.25);
+}
+
+.menu-grid .menu-btn:nth-child(1) .btn-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* --- 1. 会員証（最重要：最上部 1列横断） --- */
+.menu-grid .menu-btn:nth-child(1) {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--brand-blue), #3182ce);
+  color: #ffffff;
+  border: none;
+  padding: 14px 16px;
+  box-shadow: 0 4px 12px rgba(43, 108, 176, 0.25);
+}
+
+.menu-grid .menu-btn:nth-child(1) .btn-icon {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.menu-grid .menu-btn:nth-child(1) .arrow {
+  color: #ffffff;
+}
+
+/* --- 2. イベント・試食会（注目度高：中央 1列横断） --- */
+.menu-grid .menu-btn.full-width,
+.menu-grid .menu-btn:nth-child(4) {
+  grid-column: 1 / -1;
+  background: #fffaf0;
+  border: 1.5px solid #fbd38d;
+  padding: 12px 14px;
+}
+
+.menu-grid .menu-btn.full-width .btn-icon,
+.menu-grid .menu-btn:nth-child(4) .btn-icon {
+  background: #feebc8;
+  color: #dd6b20;
+}
+
+.menu-grid .menu-btn.full-width .arrow,
+.menu-grid .menu-btn:nth-child(4) .arrow {
+  color: #dd6b20;
 }
 
 /* 戻るボタン（絶対固定化） */
@@ -754,13 +845,13 @@ input:focus, select:focus {
   overflow-y: auto !important;
 }
 
-/* 戻るボタンがあるページの最上部にスペースを確保（被り防止） */
+/* 戻るボタンがあるページの最上部の余白を会員証（0）に統一 */
 #calcPage,
 #guidePage,
 #storePage,
 #faqPage,
 #eventPage {
-  padding-top: 45px !important;
+  padding-top: 0 !important;
 }
 
 /* --- 会員証ページスタイル --- */
