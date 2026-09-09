@@ -743,3 +743,10 @@ input:focus, select:focus {
   color: var(--text-muted);
   font-size: 11px;
 }
+
+/* Netlify等のクレジット表示を非表示化 */
+.netlify-badge,
+[class*="netlify"],
+[id*="netlify"] {
+  display: none !important;
+}
