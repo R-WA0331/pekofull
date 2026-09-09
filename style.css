@@ -567,52 +567,13 @@ input:focus, select:focus {
 /* --- 横スワイプ（カルーセル）用レイアウト --- */
 .how-to-carousel {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding: 2px 2px 6px 2px;
-  margin-bottom: 8px; 
-  -webkit-overflow-scrolling: touch;
-}
-
-/* スクロールバーのデザイン調整 */
-.how-to-carousel::-webkit-scrollbar {
-  height: 4px;
-}
-.how-to-carousel::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-}
-
-/* --- 横スワイプ（カルーセル）用レイアウト --- */
-.how-to-carousel {
-  display: flex;
-  gap: 8px; /* 12px -> 8px に縮小 */
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding: 2px 2px 8px 2px;
-  margin-bottom: 8px;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* スクロールバーのデザイン調整 */
-.how-to-carousel::-webkit-scrollbar {
-  height: 3px;
-}
-.how-to-carousel::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: 4px;
-}
-
-/* --- 横スワイプ（カルーセル）用レイアウト --- */
-.how-to-carousel {
-  display: flex;
   gap: 10px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 4px 2px 6px 2px;
+  padding: 4px 2px 8px 2px;
   margin-bottom: 8px;
   -webkit-overflow-scrolling: touch;
+  flex-shrink: 0; /* カルーセル自体が上下に潰れるのを防止 */
 }
 
 .how-to-carousel::-webkit-scrollbar {
@@ -623,7 +584,7 @@ input:focus, select:focus {
   border-radius: 4px;
 }
 
-/* 横並びのステップカード（画面幅の88%を使って左右横並び配置） */
+/* 横並びのステップカード（十分な高さを確保） */
 .how-to-card-step {
   flex: 0 0 88%;
   max-width: 310px;
@@ -631,11 +592,12 @@ input:focus, select:focus {
   background: #fff;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 8px 10px;
+  padding: 10px 12px;
   box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  min-height: 110px; /* カードが潰れるのを物理的に防止 */
 }
 
 .how-to-card-step .how-to-step-badge {
@@ -646,10 +608,11 @@ input:focus, select:focus {
   margin-bottom: 6px;
 }
 
-/* 文章（左）と画像（右）の2カラムテーブル配置 */
+/* 文章（左）と画像（右）のレイアウト */
 .how-to-content-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
   width: 100%;
 }
@@ -664,10 +627,10 @@ input:focus, select:focus {
   text-align: left;
 }
 
-/* 右側：画像枠 */
+/* 右側：画像枠（高さを75px前後に抑えてカードに綺麗に納める） */
 .how-to-card-img-large {
-  width: 110px;
-  height: 110px;
+  width: 80px;
+  height: 75px;
   flex-shrink: 0;
   background: var(--brand-light-bg);
   border-radius: var(--radius-sm);
@@ -681,7 +644,7 @@ input:focus, select:focus {
 .how-to-card-img-large img {
   width: 100%;
   height: 100%;
-  object-fit: contain; 
+  object-fit: contain;
 }
 
 .menu-grid .menu-btn:first-child {
@@ -774,6 +737,11 @@ input:focus, select:focus {
 .event-time-text {
   color: var(--text-muted);
   font-size: 11px;
+}
+
+/* ガイドページのみ、要素があふれたら縦スクロールを許可 */
+#guidePage {
+  overflow-y: auto !important;
 }
 
 /* Netlify Drawer UIの強制完全非表示 */
