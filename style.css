@@ -152,11 +152,12 @@ html, body {
 }
 
 /* 戻るボタン（絶対固定化） */
+/* 戻るボタン（相対配置に変更して被りを解消） */
 .btn-back {
-  position: fixed;        /* 画面に対して絶対固定 */
-  top: 12px;             /* 画面の上から12pxの位置 */
-  left: 16px;            /* 画面の左から16pxの位置 */
-  z-index: 999;          /* 絶対に最前面に表示 */
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 10;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -168,8 +169,14 @@ html, body {
   font-weight: 700;
   border-radius: 20px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: background 0.2s ease, transform 0.1s ease;
+  margin-bottom: 12px !important;
+}
+
+.btn-back:active {
+  background: #edf2f7;
+  transform: scale(0.96);
 }
 
 .btn-back:active {
@@ -759,12 +766,7 @@ input:focus, select:focus {
 /* --- 会員証ページスタイル --- */
 #memberPage {
   position: relative;
-}
-
-/* 他ページと完全に統一した戻るボタン位置 */
-#memberPage .btn-back {
-  margin-top: 0 !important;
-  margin-bottom: 12px !important;
+  padding-top: 0 !important;
 }
 
 /* デジタル会員証カード */
@@ -818,7 +820,7 @@ input:focus, select:focus {
   flex-wrap: wrap; 
 }
 
-/* 会員ID表示エリア（疑似バーコードの代替） */
+/* 会員ID表示エリア（疑似バーコード撤廃） */
 .user-id-box {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);

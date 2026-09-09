@@ -130,69 +130,27 @@
     </div>
 
     <!-- 会員証・クーポン画面 -->
-        <div id="memberPage" class="page-content">
-          <button class="btn-back" onclick="navigateTo('menuPage')">
-            <i class="fa-solid fa-chevron-left"></i> メニューに戻る
-          </button>
+    <div id="memberPage" class="page-content">
+      <button class="btn-back" onclick="navigateTo('menuPage')">
+        <i class="fa-solid fa-chevron-left"></i> メニューに戻る
+      </button>
 
-          <!-- 会員証カード（疑似バーコード撤廃・他ページと共通の統一デザイン） -->
-          <div class="member-card-box">
-            <div class="member-header">
-              <div class="member-rank-badge"><i class="fa-solid fa-crown"></i> ぺこふるファミリー</div>
-              <div id="memberDogName" class="member-dog-name">---- ちゃん</div>
-            </div>
-            <div class="member-info-row">
-              <span>犬種: <b id="memberBreed">-</b></span>
-              <span>居住地: <b id="memberPrefectures">-</b></span>
-            </div>
-            <!-- ユーザーID表示（システム連携対応） -->
-            <div class="user-id-box">
-              <span class="user-id-label">会員ID</span>
-              <div id="memberUserId" class="user-id-text">LOADING...</div>
-            </div>
-          </div>
-
-          <div class="app-header" style="margin-top:20px; text-align:left;">
-            <h3 class="app-title" style="justify-content:flex-start; font-size:15px;">
-              <i class="fa-solid fa-ticket" style="color:var(--meal-accent);"></i> 保有クーポン
-            </h3>
-          </div>
-
-          <div id="couponList">
-            <!-- クーポン 1: EC自動連携 -->
-            <div class="coupon-card">
-              <div class="coupon-badge">公式EC限定</div>
-              <div class="coupon-title">新規会員登録 500円OFFクーポン</div>
-              <div class="coupon-desc">公式オンラインショップで全品にご利用いただけます。</div>
-              <button class="btn-main" onclick="applyShopifyCoupon('WELCOME500')" style="background:var(--board-navy); margin-top:8px;">
-                <i class="fa-solid fa-cart-shopping"></i> クーポンを適用してショップへ
-              </button>
-            </div>
-
-            <!-- クーポン 2: イベント対面消込 -->
-            <div class="coupon-card" id="coupon-event-sample">
-              <div class="coupon-badge" style="background:#38a169;">イベント会場限定</div>
-              <div class="coupon-title">試食会 トッピング1個プレゼント</div>
-              <div class="coupon-desc">イベント会場のスタッフにご提示ください。</div>
-              <button class="btn-main" id="btn-coupon-event-sample" onclick="useEventCoupon('event-sample')" style="background:var(--meal-accent); margin-top:8px;">
-                <i class="fa-solid fa-qrcode"></i> スタッフに見せて使用する
-              </button>
-            </div>
-          </div>
+      <!-- 会員証カード（バーコード撤廃・ID表示化） -->
+      <div class="member-card-box">
+        <div class="member-header">
+          <div class="member-rank-badge"><i class="fa-solid fa-crown"></i> ぺこふるファミリー</div>
+          <div id="memberDogName" class="member-dog-name">---- ちゃん</div>
         </div>
-
-          <!-- クーポン 2: イベント対面消込 -->
-          <div class="coupon-card" id="coupon-event-sample">
-            <div class="coupon-badge" style="background:#38a169;">イベント会場限定</div>
-            <div class="coupon-title">試食会 トッピング1個プレゼント</div>
-            <div class="coupon-desc">イベント会場のスタッフにご提示ください。</div>
-            <button class="btn-main" id="btn-coupon-event-sample" onclick="useEventCoupon('event-sample')" style="background:var(--meal-accent); margin-top:8px;">
-              <i class="fa-solid fa-qrcode"></i> スタッフに見せて使用する
-            </button>
-          </div>
+        <div class="member-info-row">
+          <span>犬種: <b id="memberBreed">-</b></span>
+          <span>居住地: <b id="memberPrefectures">-</b></span>
+        </div>
+        <!-- ユーザーID表示（バーコード撤廃後） -->
+        <div class="user-id-box">
+          <span class="user-id-label">会員ID</span>
+          <div id="memberUserId" class="user-id-text">LOADING...</div>
         </div>
       </div>
-    </div>
 
       <div class="app-header" style="margin-top:20px; text-align:left;">
         <h3 class="app-title" style="justify-content:flex-start; font-size:15px;">
@@ -223,6 +181,7 @@
       </div>
     </div>
 
+          
     <!-- 給餌量計算画面 -->
     <div id="calcPage" class="page-content">
       <button class="btn-back" onclick="navigateTo('menuPage')">
