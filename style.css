@@ -767,13 +767,16 @@ input:focus, select:focus {
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
   margin-bottom: 16px;
   position: relative;
-  overflow: hidden;
+  overflow: hidden; 
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .member-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 8px;
   margin-bottom: 12px;
 }
 
@@ -787,41 +790,55 @@ input:focus, select:focus {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap; 
 }
 
 .member-dog-name {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #fff;
+  word-break: break-all;
+  text-align: right;
 }
 
 .member-info-row {
   font-size: 11px;
   color: #cbd5e0;
   display: flex;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 14px;
+  flex-wrap: wrap; 
 }
 
 .barcode-area {
   background: #fff;
   color: #1a202c;
   border-radius: var(--radius-sm);
-  padding: 8px;
+  padding: 10px 8px;
   text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
+/* バーコード文字が見切れないようフォントサイズと字間を調整 */
 .barcode-mock {
   font-family: 'Courier New', Courier, monospace;
-  font-size: 20px;
+  font-size: 16px; 
   font-weight: 900;
-  letter-spacing: 4px;
-  margin-bottom: 2px;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
 }
 
 .user-id-text {
   font-size: 10px;
   color: var(--text-muted);
+  word-break: break-all; 
+  line-height: 1.2;
 }
 
 /* --- クーポンカードスタイル --- */
