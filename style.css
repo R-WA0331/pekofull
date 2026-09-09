@@ -885,6 +885,48 @@ input:focus, select:focus {
   pointer-events: none;
 }
 
+/* ==========================================
+   会員証ページ & 戻るボタン表示補正（完全修正版）
+   ========================================== */
+
+/* 1. 全ページの「戻るボタン」を固定解除し、上部に正しく配置 */
+.btn-back {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  margin: 0 0 12px 0 !important;
+  display: inline-flex !important;
+  align-self: flex-start !important;
+  z-index: 10 !important;
+}
+
+/* 2. 会員証ページの不要な余白（padding）を完全にリセット */
+#memberPage {
+  position: relative !important;
+  padding-top: 0 !important;
+  display: none;
+  flex-direction: column;
+}
+
+#memberPage.active {
+  display: flex !important;
+}
+
+/* 3. 他ページで効いている余白設定を強制打ち消し */
+#memberPage,
+#memberPage.page-content {
+  padding-top: 0 !important;
+}
+
+/* 4. 会員証カードの位置・デザイン強制調整 */
+#memberPage .member-card-box {
+  margin-top: 0 !important;
+  margin-bottom: 16px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
 /* Netlify Drawer UIの強制完全非表示 */
 netlify-drawer,
 #netlify-drawer,
