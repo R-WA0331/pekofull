@@ -760,6 +760,7 @@ input:focus, select:focus {
   position: relative;
   padding-top: 48px; 
   box-sizing: border-box;
+}
 
 /* --- デジタル会員証スタイル --- */
 .member-card-box {
