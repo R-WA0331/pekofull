@@ -1,3 +1,5 @@
+const GAS_API_URL = window.GAS_API_URL;
+const MY_LIFF_ID = window.MY_LIFF_ID;
 const GOOGLE_MAP_LIST_URL = "https://maps.app.goo.gl/QhudeDFhPFJAtMUc8?g_st=i";
 const ONLINE_SHOP_URL = "https://www.pekofull.com";
 
@@ -24,7 +26,7 @@ if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'lo
 document.addEventListener("DOMContentLoaded", function () {
     initPrefectureOptions();
 
-    liff.init({ liffId: MY_LIFF_ID }).then(() => {
+    liff.init({ liffId: MY_LIFF_ID }).then(async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const targetPageParam = urlParams.get('page');
 
@@ -41,17 +43,22 @@ document.addEventListener("DOMContentLoaded", function () {
         const directTarget = pageMap[targetPageParam] || targetPageParam;
 
         if (liff.isLoggedIn()) {
-            liff.getProfile().then(profile => { 
-                lineUserId = profile.userId; 
+            try {
+                const profile = await liff.getProfile();
+                lineUserId = profile.userId;
+
+                // ★ URLパラメータからのクーポン獲得処理を実行
+                await handleUrlCouponClaim(lineUserId);
+
                 if (directTarget && document.getElementById(directTarget)) {
                     navigateTo(directTarget);
                 } else {
                     checkUserRegistration(lineUserId);
                 }
-            }).catch(err => {
+            } catch (err) {
                 console.error("Profile fetch error:", err);
                 navigateTo('menuPage');
-            });
+            }
         } else {
             if (directTarget && document.getElementById(directTarget)) {
                 navigateTo(directTarget);
@@ -67,6 +74,44 @@ document.addEventListener("DOMContentLoaded", function () {
     loadStoresFromSheet();
     loadEventsFromSheet();
 });
+
+/**
+ * URLパラメータから claimCoupon を抽出してGASを呼び出す処理
+ */
+async function handleUrlCouponClaim(userId) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const couponId = urlParams.get('claimCoupon');
+
+    if (!couponId || !GAS_API_URL || GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
+
+    try {
+        const response = await fetch(GAS_API_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'claimCoupon',
+                userId: userId,
+                couponId: couponId
+            })
+        });
+
+        const res = await response.json();
+
+        if (res.status === 'success') {
+            alert(`🎉 ${res.message}`);
+        } else if (res.status === 'already_exists') {
+            console.log('すでに保有済みのクーポンです。');
+        } else if (res.status === 'error') {
+            alert(`⚠️ ${res.message}`);
+        }
+    } catch (err) {
+        console.error('Coupon claim request failed:', err);
+    } finally {
+        // 処理完了後にURLから claimCoupon パラメータを削除してリロード時の二重発火を防止
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.searchParams.delete('claimCoupon');
+        window.history.replaceState({}, document.title, cleanUrl.toString());
+    }
+}
 
 function initPrefectureOptions() {
     const selects = document.querySelectorAll('.pref-select-target');
@@ -592,42 +637,57 @@ async function loadMemberData() {
       if (data.coupons && data.coupons.length > 0) {
         const usedSet = new Set(data.usedCoupons || []);
         
-        // クーポンの動的描画部分のコード
         couponListEl.innerHTML = data.coupons.map(coupon => {
-        const isUsed = usedSet.has(coupon.couponId);
-        
-        // Shopifyリンクが存在するか確認
-        const hasShopifyUrl = coupon.shopifyUrl && coupon.shopifyUrl.trim() !== '';
+          const isUsed = usedSet.has(coupon.couponId);
+          
+          // ① 「イベントで使う」の判定（targetUser に EVENT が含まれるか）
+          const rawTarget = coupon.targetUser || coupon.target || '';
+          const targetUserStr = String(rawTarget).toUpperCase();
+          const showEventBtn = targetUserStr.includes('EVENT');
 
-        return `
+          // ② 「公式ストアで使う」の判定（shopifyUrl が記入されているか）
+          const hasShopifyUrl = coupon.shopifyUrl && String(coupon.shopifyUrl).trim() !== '';
+
+          // ボタンのHTML生成
+          let buttonsHtml = '';
+
+          // ① イベント用ボタン
+          if (showEventBtn) {
+            buttonsHtml += `
+              <button class="btn-main" id="btn-coupon-${coupon.couponId}" 
+                      onclick="useEventCoupon('${coupon.couponId}')" 
+                      style="background:var(--meal-accent); flex:1; font-size:11px; padding:8px 4px;" 
+                      ${isUsed ? 'disabled' : ''}>
+                <i class="fa-solid fa-qrcode"></i> ${isUsed ? '使用済み' : 'イベントで使う'}
+              </button>
+            `;
+          }
+
+            // ② 詳細ページ（クラファン・公式ストア等）用ボタン
+          if (hasShopifyUrl) {
+            buttonsHtml += `
+              <a href="${coupon.shopifyUrl}" target="_blank" rel="noopener noreferrer" 
+                 class="btn-main" 
+                 style="background:#3182ce; color:#fff; flex:1; font-size:11px; padding:8px 4px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i> 購入サイトを見る
+              </a>
+            `;
+          }
+
+          return `
             <div class="coupon-card ${isUsed ? 'used' : ''}" id="coupon-${coupon.couponId}">
-            <div class="coupon-badge" style="background:${isUsed ? '#a0aec0' : '#38a169'};">
+              <div class="coupon-badge" style="background:${isUsed ? '#a0aec0' : '#38a169'};">
                 ${isUsed ? '使用済み' : '未使用'}
+              </div>
+              <div class="coupon-title">${coupon.title}</div>
+              <div class="coupon-desc">${coupon.description}</div>
+              
+              <!-- ボタン配置エリア（判定条件に応じて1つまたは2つ表示） -->
+              <div style="display:flex; gap:8px; margin-top:10px;">
+                ${buttonsHtml}
+              </div>
             </div>
-            <div class="coupon-title">${coupon.title}</div>
-            <div class="coupon-desc">${coupon.description}</div>
-            
-            <!-- ボタン配置エリア（並べて表示） -->
-            <div style="display:flex; gap:8px; margin-top:10px;">
-                <!-- 店舗用ボタン -->
-                <button class="btn-main" id="btn-coupon-${coupon.couponId}" 
-                        onclick="useEventCoupon('${coupon.couponId}')" 
-                        style="background:var(--meal-accent); flex:1; font-size:11px; padding:8px 4px;" 
-                        ${isUsed ? 'disabled' : ''}>
-                <i class="fa-solid fa-qrcode"></i> ${isUsed ? '使用済み' : '店舗で使う'}
-                </button>
-
-                <!-- Shopify（公式ストア）用ボタン（URLがある場合のみ表示） -->
-                ${hasShopifyUrl ? `
-                <a href="${coupon.shopifyUrl}" target="_blank" rel="noopener noreferrer" 
-                    class="btn-main" 
-                    style="background:#95bf47; color:#fff; flex:1; font-size:11px; padding:8px 4px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
-                    <i class="fa-solid fa-cart-shopping" style="margin-right:4px;"></i> 公式ストアで使う
-                </a>
-                ` : ''}
-            </div>
-            </div>
-        `;
+          `;
         }).join('');
 
       } else {
@@ -638,6 +698,28 @@ async function loadMemberData() {
     console.error('データ取得失敗:', error);
     if (couponListEl) {
       couponListEl.innerHTML = `<p style="text-align:center; font-size:12px; color:#e53e3e; padding:16px;">クーポンの読み込みに失敗しました。</p>`;
+    }
+  }
+}
+
+function toggleAccordion(element) {
+  // クリックされた要素の次の要素（FAQの回答部分）を取得
+  var content = element.nextElementSibling;
+  // 矢印アイコンを取得
+  var icon = element.querySelector('.fa-chevron-down, .fa-chevron-up');
+
+  // 表示・非表示の切り替え
+  if (content.style.display === "block") {
+    content.style.display = "none";
+    if (icon) {
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+    }
+  } else {
+    content.style.display = "block";
+    if (icon) {
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
     }
   }
 }

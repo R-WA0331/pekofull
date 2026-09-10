@@ -5,6 +5,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🐾 ぺこふる</title>
+
+  <!-- ★ Vercel環境変数のセット（ローカルフォールバック付き） -->
+  <script>
+    const isVercel = window.location.hostname.includes('vercel.app') || window.location.hostname === 'www.pekofull.com';
+
+    if (isVercel) {
+      // Vercel本番環境用（実際の値はVercel管理画面から参照）
+      window.GAS_API_URL = "https://script.google.com/macros/s/（本番のGASデプロイID）/exec";
+      window.MY_LIFF_ID = "（本番のLIFF ID）";
+    } else {
+      // ローカルテスト用 (127.0.0.1 / localhost)
+      window.GAS_API_URL = "https://script.google.com/macros/s/（テスト用GASデプロイID）/exec";
+      window.MY_LIFF_ID = "（テスト用LIFF ID）";
+    }
+  </script>
+
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <!-- Google Fonts & Font Awesome -->
   <link rel="stylesheet" href="style.css">
@@ -15,7 +31,6 @@
 </head>
 
 <body>
-
   <div class="card">
     
     <div id="loadingPage" class="page-content active" style="text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 13px;">
@@ -295,16 +310,19 @@
         </div>
       </div>
 
-      <div class="guide-card">
-        <div class="guide-title"><i class="fa-solid fa-bowl-food"></i> ドライフードからの切り替え</div>
-        <div style="background:#f7fafc; padding:10px; border-radius:6px; font-size:11px; color:var(--text-main); line-height:1.6;">
+      <div class="faq-item" style="margin-bottom: 12px;">
+        <div class="faq-q" onclick="toggleAccordion(this)">
+          <span><i class="fa-solid fa-bowl-food" style="color:var(--brand-blue); margin-right:8px;"></i>ドライフードからの切り替え</span>
+          <i class="fa-solid fa-chevron-down"></i>
+        </div>
+        <div class="faq-a" style="line-height: 1.8;">
           <strong>1〜2日目:</strong> いつもの 90% ＋ ぺこふる 10%<br>
           <strong>3〜4日目:</strong> いつもの 70% ＋ ぺこふる 30%<br>
           <strong>5〜6日目:</strong> いつもの 30% ＋ ぺこふる 70%<br>
           <strong>7日目以降:</strong> ぺこふる 100% 完了！
         </div>
       </div>
-    </div>    
+</div>    
     
     <!-- 取扱店舗画面 -->
     <div id="storePage" class="page-content">
