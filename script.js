@@ -1,5 +1,3 @@
-const GAS_API_URL = window.GAS_API_URL;
-const MY_LIFF_ID = window.MY_LIFF_ID;
 const GOOGLE_MAP_LIST_URL = "https://maps.app.goo.gl/QhudeDFhPFJAtMUc8?g_st=i";
 const ONLINE_SHOP_URL = "https://www.pekofull.com";
 
