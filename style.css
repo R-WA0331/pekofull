@@ -95,23 +95,23 @@ html, body {
 /* メニューボタン群 */
 .menu-grid {
   display: grid !important;
-  grid-template-columns: 1fr 1fr; /* 基本は2列 */
-  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px; 
   width: 100%;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 /* 基本のボタンデザイン（アイコン左・テキスト左寄せ） */
 .menu-btn {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* アイコン左配置 */
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 10px;
   background: #ffffff;
   border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
-  font-size: 12px;
+  padding: 14px 14px; /* 上下左右のパディングを拡大 */
+  font-size: 14px; /* 12px -> 14px に拡大 */
   font-weight: 700;
   color: var(--board-navy);
   cursor: pointer;
@@ -119,7 +119,7 @@ html, body {
   box-shadow: var(--shadow-sm);
   text-align: left;
   box-sizing: border-box;
-  min-height: 48px;
+  min-height: 58px; /* 48px -> 58px に拡大 */
 }
 
 .menu-btn:active {
@@ -134,11 +134,11 @@ html, body {
 
 /* アイコンパーツ（左側固定） */
 .menu-btn .btn-icon {
-  font-size: 13px;
+  font-size: 16px; /* 13px -> 16px */
   color: var(--brand-blue);
   background: #ebf8ff;
-  width: 28px;
-  height: 28px;
+  width: 34px; /* 28px -> 34px */
+  height: 34px; /* 28px -> 34px */
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -157,29 +157,32 @@ html, body {
 .menu-grid .menu-btn.full-width,
 .menu-grid .menu-btn:nth-child(4) {
   grid-column: 1 / -1;
-  order: -1; /* 最上部に持ち上げ */
+  order: -1;
   background: #fffaf0;
   border: 1.5px solid #fbd38d;
-  padding: 6px 12px; /* 高さを抑えてスリム化 */
-  min-height: 38px;
+  padding: 10px 14px;
+  min-height: 46px;
+  font-size: 14px;
 }
 
 .menu-grid .menu-btn.full-width .btn-icon,
 .menu-grid .menu-btn:nth-child(4) .btn-icon {
   background: #feebc8;
   color: #dd6b20;
-  width: 24px;
-  height: 24px;
-  font-size: 11px;
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
 }
 
 /* --- 2段目：会員証・クーポン（メイン） --- */
 .menu-grid .menu-btn:nth-child(1) {
-  grid-column: 1 / -1;
+grid-column: 1 / -1;
   background: linear-gradient(135deg, var(--brand-blue), #3182ce);
   color: #ffffff;
   border: none;
-  padding: 12px;
+  padding: 16px;
+  min-height: 58px;
+  font-size: 15px;
   box-shadow: 0 4px 12px rgba(43, 108, 176, 0.25);
 }
 
@@ -1016,6 +1019,33 @@ input:focus, select:focus {
   margin-bottom: 16px !important;
   width: 100% !important;
   box-sizing: border-box !important;
+}
+
+/* 外部リンク・アライメント用スタイル追加 */
+.faq-external-link {
+  margin-top: 20px;
+  padding: 14px;
+  background: #f7fafc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.faq-external-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: var(--brand-blue);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  box-shadow: var(--shadow-sm);
+  box-sizing: border-box;
 }
 
 /* Netlify Drawer UIの強制完全非表示 */
