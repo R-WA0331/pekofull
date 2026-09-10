@@ -15,16 +15,28 @@ let lineUserId = "";
 let fetchedStores = [];
 let fetchedEvents = [];
 
-// 開発・ローカルテスト用（Go Liveで動かすときだけコメントアウトを外す）
+// 開発・ローカルテスト用
 if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
-  lineUserId = 'U885733473bf657b4bfe0260d01ae9f17'; // ← ここにスプレッドシートにある実際のLINE IDを貼る
+  lineUserId = 'U885733473bf657b4bfe0260d01ae9f17';
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
     initPrefectureOptions();
+    loadStoresFromSheet();
+    loadEventsFromSheet();
+});
 
-    liff.init({ liffId: MY_LIFF_ID }).then(async () => {
+/**
+ * index.html から MY_LIFF_ID のセット完了後に呼び出される初期化関数
+ */
+function initLiffApp() {
+    if (!window.MY_LIFF_ID) {
+        console.error("MY_LIFF_ID が設定されていません");
+        navigateTo('menuPage');
+        return;
+    }
+
+    liff.init({ liffId: window.MY_LIFF_ID }).then(async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const targetPageParam = urlParams.get('page');
 
@@ -45,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 const profile = await liff.getProfile();
                 lineUserId = profile.userId;
 
-                // ★ URLパラメータからのクーポン獲得処理を実行
                 await handleUrlCouponClaim(lineUserId);
 
                 if (directTarget && document.getElementById(directTarget)) {
@@ -68,10 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("LIFF Init Error:", err);
         navigateTo('menuPage');
     });
-
-    loadStoresFromSheet();
-    loadEventsFromSheet();
-});
+}
 
 /**
  * URLパラメータから claimCoupon を抽出してGASを呼び出す処理
@@ -80,10 +88,10 @@ async function handleUrlCouponClaim(userId) {
     const urlParams = new URLSearchParams(window.location.search);
     const couponId = urlParams.get('claimCoupon');
 
-    if (!couponId || !GAS_API_URL || GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
+    if (!couponId || !window.GAS_API_URL || window.GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
 
     try {
-        const response = await fetch(GAS_API_URL, {
+        const response = await fetch(window.GAS_API_URL, {
             method: 'POST',
             body: JSON.stringify({
                 action: 'claimCoupon',
@@ -104,7 +112,6 @@ async function handleUrlCouponClaim(userId) {
     } catch (err) {
         console.error('Coupon claim request failed:', err);
     } finally {
-        // 処理完了後にURLから claimCoupon パラメータを削除してリロード時の二重発火を防止
         const cleanUrl = new URL(window.location.href);
         cleanUrl.searchParams.delete('claimCoupon');
         window.history.replaceState({}, document.title, cleanUrl.toString());
@@ -124,12 +131,12 @@ function initPrefectureOptions() {
 }
 
 function checkUserRegistration(userId) {
-  if (!GAS_API_URL || GAS_API_URL.includes("YOUR_GAS_DEPLOY_ID")) {
+  if (!window.GAS_API_URL || window.GAS_API_URL.includes("YOUR_GAS_DEPLOY_ID")) {
     navigateTo('menuPage');
     return;
   }
 
-  fetch(GAS_API_URL, {
+  fetch(window.GAS_API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({ action: 'checkUser', userId: userId })
@@ -148,34 +155,85 @@ function checkUserRegistration(userId) {
   });
 }
 
-function loadMemberData() {
-    if (!lineUserId || !GAS_API_URL || GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
-    
-    const userUrl = `${GAS_API_URL}${GAS_API_URL.includes('?') ? '&' : '?'}type=getUserInfo&userId=${lineUserId}`;
-    fetch(userUrl)
-    .then(res => res.json())
-    .then(data => {
-        if (data.user) {
-            document.getElementById('memberDogName').innerText = (data.user.dogName || '-') + ' ちゃん';
-            document.getElementById('memberBreed').innerText = data.user.breed || '-';
-            document.getElementById('memberPrefectures').innerText = data.user.prefecture || '-';
-            document.getElementById('memberUserId').innerText = 'ID: ' + lineUserId;
-        }
+// GASから会員情報と保有クーポンを取得して画面に描画する関数
+async function loadMemberData() {
+  const couponListEl = document.getElementById('couponList');
+  if (!window.GAS_API_URL || window.GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
+
+  const targetUserId = lineUserId || 'GUEST';
+
+  try {
+    const response = await fetch(`${window.GAS_API_URL}${window.GAS_API_URL.includes('?') ? '&' : '?'}type=getUserInfo&userId=${targetUserId}`);
+    const data = await response.json();
+
+    if (data.status === 'success' || data.user) {
+      if (data.user) {
+        document.getElementById('memberDogName').innerText = (data.user.dogName || '----') + ' ちゃん';
+        document.getElementById('memberBreed').innerText = data.user.breed || '-';
+        document.getElementById('memberPrefectures').innerText = data.user.prefecture || '-';
+        document.getElementById('memberUserId').innerText = 'ID: ' + (data.user.userId || targetUserId);
+      }
+
+      if (data.coupons && data.coupons.length > 0) {
+        const usedSet = new Set(data.usedCoupons || []);
         
-        // 使用済みクーポンの非活性化
-        if (data.usedCoupons && data.usedCoupons.length > 0) {
-            data.usedCoupons.forEach(couponId => {
-                const targetCard = document.getElementById(`coupon-${couponId}`);
-                const targetBtn = document.getElementById(`btn-coupon-${couponId}`);
-                if (targetCard) targetCard.classList.add('used');
-                if (targetBtn) {
-                    targetBtn.innerText = "使用済み";
-                    targetBtn.disabled = true;
-                }
-            });
-        }
-    })
-    .catch(err => console.error("会員情報取得エラー:", err));
+        couponListEl.innerHTML = data.coupons.map(coupon => {
+          const isUsed = usedSet.has(coupon.couponId);
+          
+          const rawTarget = coupon.targetUser || coupon.target || '';
+          const targetUserStr = String(rawTarget).toUpperCase();
+          const showEventBtn = targetUserStr.includes('EVENT');
+
+          const hasShopifyUrl = coupon.shopifyUrl && String(coupon.shopifyUrl).trim() !== '';
+
+          let buttonsHtml = '';
+
+          if (showEventBtn) {
+            buttonsHtml += `
+              <button class="btn-main" id="btn-coupon-${coupon.couponId}" 
+                      onclick="useEventCoupon('${coupon.couponId}')" 
+                      style="background:var(--meal-accent); flex:1; font-size:11px; padding:8px 4px;" 
+                      ${isUsed ? 'disabled' : ''}>
+                <i class="fa-solid fa-qrcode"></i> ${isUsed ? '使用済み' : 'イベントで使う'}
+              </button>
+            `;
+          }
+
+          if (hasShopifyUrl) {
+            buttonsHtml += `
+              <a href="${coupon.shopifyUrl}" target="_blank" rel="noopener noreferrer" 
+                 class="btn-main" 
+                 style="background:#3182ce; color:#fff; flex:1; font-size:11px; padding:8px 4px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
+                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i> 購入サイトを見る
+              </a>
+            `;
+          }
+
+          return `
+            <div class="coupon-card ${isUsed ? 'used' : ''}" id="coupon-${coupon.couponId}">
+              <div class="coupon-badge" style="background:${isUsed ? '#a0aec0' : '#38a169'};">
+                ${isUsed ? '使用済み' : '未使用'}
+              </div>
+              <div class="coupon-title">${coupon.title}</div>
+              <div class="coupon-desc">${coupon.description}</div>
+              
+              <div style="display:flex; gap:8px; margin-top:10px;">
+                ${buttonsHtml}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } else {
+        couponListEl.innerHTML = `<p style="text-align:center; font-size:12px; color:#718096; padding:16px;">利用可能なクーポンはありません。</p>`;
+      }
+    }
+  } catch (error) {
+    console.error('データ取得失敗:', error);
+    if (couponListEl) {
+      couponListEl.innerHTML = `<p style="text-align:center; font-size:12px; color:#e53e3e; padding:16px;">クーポンの読み込みに失敗しました。</p>`;
+    }
+  }
 }
 
 function applyShopifyCoupon(code) {
@@ -189,7 +247,7 @@ function useEventCoupon(couponId) {
     const btn = document.getElementById(`btn-coupon-${couponId}`);
     if (btn) btn.disabled = true;
 
-    fetch(GAS_API_URL, {
+    fetch(window.GAS_API_URL, {
         method: 'POST',
         body: JSON.stringify({
             action: 'useCoupon',
@@ -278,7 +336,7 @@ function handleRegister(e) {
         isRegular: document.querySelector('input[name="isRegular"]:checked').value === "true"
     };
 
-    fetch(GAS_API_URL, {
+    fetch(window.GAS_API_URL, {
         method: 'POST',
         body: JSON.stringify(payload)
     })
@@ -298,16 +356,16 @@ function handleRegister(e) {
 }
 
 function loadStoresFromSheet() {
-    if (!GAS_API_URL || GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
-    fetch(GAS_API_URL)
+    if (!window.GAS_API_URL || window.GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
+    fetch(window.GAS_API_URL)
     .then(res => res.json())
     .then(data => { fetchedStores = data; })
     .catch(err => console.error(err));
 }
 
 function loadEventsFromSheet() {
-    if (!GAS_API_URL || GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
-    const eventUrl = GAS_API_URL + (GAS_API_URL.includes('?') ? '&type=event' : '?type=event');
+    if (!window.GAS_API_URL || window.GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
+    const eventUrl = window.GAS_API_URL + (window.GAS_API_URL.includes('?') ? '&type=event' : '?type=event');
 
     fetch(eventUrl)
     .then(res => res.json())
@@ -514,8 +572,8 @@ async function searchStore() {
     const selectedPref = document.getElementById('prefSelect').value;
     if (!selectedPref) return alert('都道府県を選択してください。');
 
-    if (GAS_API_URL && !GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) {
-        fetch(GAS_API_URL, {
+    if (window.GAS_API_URL && !window.GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) {
+        fetch(window.GAS_API_URL, {
             method: 'POST',
             body: JSON.stringify({
                 action: 'savePrefectureTag',
@@ -528,10 +586,10 @@ async function searchStore() {
     const resultDiv = document.getElementById('storeResult');
     const loadingDiv = document.getElementById('loadingMsg');
     
-    if (fetchedStores.length === 0 && GAS_API_URL && !GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) {
+    if (fetchedStores.length === 0 && window.GAS_API_URL && !window.GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) {
         loadingDiv.style.display = 'block';
         try {
-            const res = await fetch(GAS_API_URL);
+            const res = await fetch(window.GAS_API_URL);
             fetchedStores = await res.json();
         } catch (e) {
             console.error("再取得エラー", e);
@@ -611,102 +669,10 @@ async function searchStore() {
     resultDiv.style.display = 'block';
 }
 
-// GASから会員情報と保有クーポンを取得して画面に描画する関数
-async function loadMemberData() {
-  const couponListEl = document.getElementById('couponList');
-  if (!GAS_API_URL || GAS_API_URL.includes("YOUR_GAS_DEPLOYMENT_ID")) return;
-
-  const targetUserId = lineUserId || 'GUEST';
-
-  try {
-    const response = await fetch(`${GAS_API_URL}${GAS_API_URL.includes('?') ? '&' : '?'}type=getUserInfo&userId=${targetUserId}`);
-    const data = await response.json();
-
-    if (data.status === 'success' || data.user) {
-      // 1. 会員情報の反映
-      if (data.user) {
-        document.getElementById('memberDogName').innerText = (data.user.dogName || '----') + ' ちゃん';
-        document.getElementById('memberBreed').innerText = data.user.breed || '-';
-        document.getElementById('memberPrefectures').innerText = data.user.prefecture || '-';
-        document.getElementById('memberUserId').innerText = 'ID: ' + (data.user.userId || targetUserId);
-      }
-
-      // 2. クーポンの動的描画
-      if (data.coupons && data.coupons.length > 0) {
-        const usedSet = new Set(data.usedCoupons || []);
-        
-        couponListEl.innerHTML = data.coupons.map(coupon => {
-          const isUsed = usedSet.has(coupon.couponId);
-          
-          // ① 「イベントで使う」の判定（targetUser に EVENT が含まれるか）
-          const rawTarget = coupon.targetUser || coupon.target || '';
-          const targetUserStr = String(rawTarget).toUpperCase();
-          const showEventBtn = targetUserStr.includes('EVENT');
-
-          // ② 「公式ストアで使う」の判定（shopifyUrl が記入されているか）
-          const hasShopifyUrl = coupon.shopifyUrl && String(coupon.shopifyUrl).trim() !== '';
-
-          // ボタンのHTML生成
-          let buttonsHtml = '';
-
-          // ① イベント用ボタン
-          if (showEventBtn) {
-            buttonsHtml += `
-              <button class="btn-main" id="btn-coupon-${coupon.couponId}" 
-                      onclick="useEventCoupon('${coupon.couponId}')" 
-                      style="background:var(--meal-accent); flex:1; font-size:11px; padding:8px 4px;" 
-                      ${isUsed ? 'disabled' : ''}>
-                <i class="fa-solid fa-qrcode"></i> ${isUsed ? '使用済み' : 'イベントで使う'}
-              </button>
-            `;
-          }
-
-            // ② 詳細ページ（クラファン・公式ストア等）用ボタン
-          if (hasShopifyUrl) {
-            buttonsHtml += `
-              <a href="${coupon.shopifyUrl}" target="_blank" rel="noopener noreferrer" 
-                 class="btn-main" 
-                 style="background:#3182ce; color:#fff; flex:1; font-size:11px; padding:8px 4px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">
-                <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right:4px;"></i> 購入サイトを見る
-              </a>
-            `;
-          }
-
-          return `
-            <div class="coupon-card ${isUsed ? 'used' : ''}" id="coupon-${coupon.couponId}">
-              <div class="coupon-badge" style="background:${isUsed ? '#a0aec0' : '#38a169'};">
-                ${isUsed ? '使用済み' : '未使用'}
-              </div>
-              <div class="coupon-title">${coupon.title}</div>
-              <div class="coupon-desc">${coupon.description}</div>
-              
-              <!-- ボタン配置エリア（判定条件に応じて1つまたは2つ表示） -->
-              <div style="display:flex; gap:8px; margin-top:10px;">
-                ${buttonsHtml}
-              </div>
-            </div>
-          `;
-        }).join('');
-
-      } else {
-        couponListEl.innerHTML = `<p style="text-align:center; font-size:12px; color:#718096; padding:16px;">利用可能なクーポンはありません。</p>`;
-      }
-    }
-  } catch (error) {
-    console.error('データ取得失敗:', error);
-    if (couponListEl) {
-      couponListEl.innerHTML = `<p style="text-align:center; font-size:12px; color:#e53e3e; padding:16px;">クーポンの読み込みに失敗しました。</p>`;
-    }
-  }
-}
-
 function toggleAccordion(element) {
-  // クリックされた要素の次の要素（FAQの回答部分）を取得
   var content = element.nextElementSibling;
-  // 矢印アイコンを取得
   var icon = element.querySelector('.fa-chevron-down, .fa-chevron-up');
 
-  // 表示・非表示の切り替え
   if (content.style.display === "block") {
     content.style.display = "none";
     if (icon) {
