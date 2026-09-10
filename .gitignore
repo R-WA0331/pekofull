@@ -3,4 +3,4 @@
 **/*.zip
 .env
 .env.local
-config.js
+/config.js

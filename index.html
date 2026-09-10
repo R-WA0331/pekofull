@@ -6,19 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🐾 ぺこふる</title>
 
-  <!-- ★ Vercel環境変数のセット（ローカルフォールバック付き） -->
   <script>
-    const isVercel = window.location.hostname.includes('vercel.app') || window.location.hostname === 'www.pekofull.com';
-
-    if (isVercel) {
-      // Vercel本番環境用（実際の値はVercel管理画面から参照）
-      window.GAS_API_URL = "https://script.google.com/macros/s/（本番のGASデプロイID）/exec";
-      window.MY_LIFF_ID = "（本番のLIFF ID）";
-    } else {
-      // ローカルテスト用 (127.0.0.1 / localhost)
-      window.GAS_API_URL = "https://script.google.com/macros/s/（テスト用GASデプロイID）/exec";
-      window.MY_LIFF_ID = "（テスト用LIFF ID）";
-    }
+  // サーバーレスAPIから環境変数を安全に取得
+  fetch('/api/config')
+    .then(response => response.json())
+    .then(config => {
+      window.GAS_API_URL = config.gasApiUrl;
+      window.MY_LIFF_ID = config.liffId;
+      
+      // 設定読み込み完了後にメイン処理（script.js）を起動
+      const script = document.createElement('script');
+      script.src = 'script.js';
+      document.head.appendChild(script);
+    })
+    .catch(err => console.error('Config load error:', err));
   </script>
 
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
