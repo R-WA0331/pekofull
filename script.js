@@ -517,8 +517,8 @@ function calculate() {
     const mealGram = Math.round(dayGram / times);
     const days = (400 / dayGram).toFixed(1);
 
-    const dayCm = (28 * (dayGram / 400)).toFixed(1);
-    const mealCm = (28 * (mealGram / 400)).toFixed(1);
+    const dayCm = (20 * (dayGram / 400)).toFixed(1);
+    const mealCm = (20 * (mealGram / 400)).toFixed(1);
 
     document.getElementById('sumWeight').innerText = weight;
     document.getElementById('sumTimes').innerText = times;
