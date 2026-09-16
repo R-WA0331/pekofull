@@ -16,8 +16,10 @@ let fetchedStores = [];
 let fetchedEvents = [];
 
 // 開発・ローカルテスト用
+// ※ダミーID。テスト用スプレッドシートの「会員名簿」（必要なら「ユーザー保有クーポン」）に
+//   同じIDの行を登録しておくこと。未登録のままだと会員登録画面に遷移するだけになる。
 if (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') {
-  lineUserId = 'U885733473bf657b4bfe0260d01ae9f17';
+  lineUserId = 'TEST_LOCAL_USER_0001';
 }
 
 document.addEventListener("DOMContentLoaded", function () {
