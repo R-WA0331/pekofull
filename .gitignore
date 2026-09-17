@@ -4,3 +4,6 @@
 .env
 .env.local
 /config.js
+
+# GASのスクリプトID（gas/.clasp.json）はgit管理から除外。IDは別途保管して共有すること
+gas/.clasp.json
