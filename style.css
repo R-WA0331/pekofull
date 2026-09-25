@@ -968,7 +968,7 @@ input:focus, select:focus {
 }
 
 .coupon-desc {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
   line-height: 1.4;
 }
